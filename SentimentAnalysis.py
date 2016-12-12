@@ -10,6 +10,7 @@ from sklearn.svm import SVC, LinearSVC, NuSVC
 
 from nltk.classify import ClassifierI
 from statistics import mode
+from nltk.tokenize import word_tokenize
 
 ##to define the vote classifier
 class VoteClassifier(ClassifierI):
@@ -165,5 +166,13 @@ print("Classification: ", voteClassifier.classify(testSet[2][0]), " Confidence: 
 print("Classification: ", voteClassifier.classify(testSet[3][0]), " Confidence: ", voteClassifier.confidence(testSet[3][0]))
 print("Classification: ", voteClassifier.classify(testSet[4][0]), " Confidence: ", voteClassifier.confidence(testSet[4][0]))
 print("Classification: ", voteClassifier.classify(testSet[5][0]), " Confidence: ", voteClassifier.confidence(testSet[5][0]))
-                
-                                
+
+def findFeaturesInSentance(sentance):
+    words = word_tokenize(sentance)
+    features = {}
+    for w in wordFeatures:
+        features[w] = (w in words)
+
+def sentiment(text):
+    feats = findFeaturesInSentance(text)
+    return voted_classifier.classify(feats)
