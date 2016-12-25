@@ -1,10 +1,15 @@
+setwd("D:/senti/")
+
+install.packages("twitteR")
+install.packages("ROAuth")
+
 library(twitteR)
 library(ROAuth)
 
-consumerKey <- "wtWw3J6IzZhW5vtlNhJ16xfVS"
-consumerSecret <- "rw6G0ErwEEos6Xvl6ua59csCCuGZwkHJZ1IOZ94PAV5OvVHAeq"
-accessToken <- "3060634116-BRClW1IjisNuVAP1LMphUHSWFx4DWWOBQjfWThE"
-accessTokenSecret <- "SPZS5erC2jyhVkuxcvvtO1xyOuUupA8WySME9htg9Xy00"
+consumerKey <- "HIe2XrWNqcHX1KsoHF1HWkmcV"
+consumerSecret <- "SImYk27PgiE6ockPjMbKjtahfzztZDv2N3mtRFh1GdemUT5sm7"
+accessToken <- "841573177-LVleaagDeAk8k1lvnvVFjL9aJ7QsNTIPsXf4V3CU"
+accessTokenSecret <- "u9L1nX6Vp5Hg1XRBhDgwwlxzJq96pUdiruf1nzOFXfpE8"
 
 setup_twitter_oauth(
   consumerKey,
@@ -12,13 +17,14 @@ setup_twitter_oauth(
   accessToken,
   accessTokenSecret )
 
+
 tweets <- userTimeline("RDataMining", n =3200)
 
 url <- "http://www.rdatamining.com/data/RDataMining-Tweets-20160212.rds"
 
-download.file(url, destfile = "./data/RDataMining-Tweets-20160212.rds")
+download.file(url, destfile = "./RDataMining-Tweets-20160212.rds")
 
-tweets2 <- readRDS("./data/RDataMining-Tweets-20160212.rds")
+tweets2 <- readRDS("./RDataMining-Tweets-20160212.rds")
 
 (n.tweet <- length(tweets))
 
@@ -28,18 +34,18 @@ tweets2 <- readRDS("./data/RDataMining-Tweets-20160212.rds")
 tweets.df <- twListToDF(tweets)
 tweets2.df <- twListToDF(tweets2)
 
-tweets2.df[190, c("id", "created", "screenName", "replyToSN", "favoriteCount", "retweetCount", 
+tweets.df[190, c("id", "created", "screenName", "replyToSN", "favoriteCount", "retweetCount", 
                   "longitude", "latitude", "text")]
 
 # print tweet2 #190 and make text fit for slide width
-writeLines(strwrap(tweets2.df$text[190], 60))
+writeLines(strwrap(tweets.df$text[190], 60))
 
 ###  Text Cleaning  ###
-
+install.packages("tm")
 library(tm)
 
 # build a corpus, and specify the source to be character vectors
-myCorpus <- Corpus(VectorSource(tweets2.df$text))
+myCorpus <- Corpus(VectorSource(tweets.df$text))
 
 # convert to lower case
 myCorpus <- tm_map(myCorpus, content_transformer(tolower))
@@ -63,6 +69,7 @@ myCorpus <- tm_map(myCorpus, stripWhitespace)
 # keep a copy for stem completion later
 myCorpusCopy <- myCorpus
 
+install.packages("SnowballC")
 ### Stemming and Stem Completion  ###
 
 myCorpus <- tm_map(myCorpus, stemDocument) # stem words
@@ -111,6 +118,10 @@ idx <- which(dimnames(tdm)$Terms %in% c("r", "data", "mining"))
 as.matrix(tdm[idx, 21:30])
 
 ### Top Frequent Terms ###
+
+install.packages("ggplot2")
+library(ggplot2)
+
 (freq.terms <- findFreqTerms(tdm, lowfreq = 20))
 
 term.freq <- rowSums(as.matrix(tdm))
@@ -132,6 +143,7 @@ library(RColorBrewer)
 pal <- brewer.pal(9, "BuGn")[-(1:4)]
 
 # plot word cloud
+install.packages("wordcloud")
 library(wordcloud)
 wordcloud(words = names(word.freq), freq = word.freq, min.freq=3,
           random.order = F, colors = pal)
@@ -144,35 +156,44 @@ findAssocs(tdm, "r", 0.2)
 findAssocs(tdm, "data", 0.2)
 
 ### Network of Terms ###
+source("https://bioconductor.org/biocLite.R")
+biocLite("graph")
+install.packages("graph")
 library(graph)
+source("http://bioconductor.org/biocLite.R")
+biocLite("Rgraphviz")
 plot(tdm, term=freq.terms, corThreshold = 0.1, weighting = T)
 
 ### Topic Modelling ###
 dtm <- as.DocumentTermMatrix(tdm)
+install.packages("topicmodels")
 library(topicmodels)
 lda <- LDA(dtm, k = 8)  # find 8 topics
 term <- terms(lda, 7) # first 7 terms of evry topic
 (trem <- apply(term, MARGIN =2, paste, collapse = ", "))
 
+install.packages("data.table")
+library(data.table)
 topics <- topics(lda)  # 1st topic identified for every document(tweets2)
-topics <- data.frame(data=as.IDate(tweets2.df$created), topic = topics)
+topics <- data.frame(data=as.IDate(tweets.df$created), topic = topics)
 ggplot(topics, aes(data, fill = term[topic])) + geom_density(position = "stack")
 
 
 ### Sentiment Analysis ###
+install.packages("devtools")
 require(devtools)
 install_github("sentiment140", "okugami79")
 
 # sentiment analysis # 
 library(sentiment)
-sentiments <- sentiment(tweets2.df$text)
+sentiments <- sentiment(tweets.df$text)
 table(sentiments$polarity)
 
 # sentiment plot
 sentiments$score <- 0
 sentiments$score[sentiments$polarity == "positive"] <- 1
 sentiments$score[sentiments$polarity == "negative"] <- -1
-sentiments$date <- as.IDate(tweets2.df$created)
+sentiments$date <- as.IDate(tweets.df$created)
 result <- aggregate(score ~ date, data = sentiments, sum)
 plot(result, type = "l")
 
@@ -194,5 +215,7 @@ grep("Baltimore", world.cities[,1])
 
 twitterMap("simplystats", userLocation = "Baltimore")
 quartz()
+??quartz
+
 twitterMap("simplystats", plotType = "both")
 worldMapEnv
