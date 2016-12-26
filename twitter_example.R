@@ -1,6 +1,14 @@
-setwd("/Users/royzhuang/Documents/R program/Machine learning/project")
+setwd("D:/senti/project")
 
 rm(list=ls())
+
+install.packages("dplyr")
+install.packages("purrr")
+install.packages("twitteR")
+install.packages("httr")
+install.packages("base64enc")
+install.packages("ggplot2")
+
 
 library(dplyr)
 library(purrr)
@@ -11,10 +19,10 @@ library(ggplot2)
 
 # set global options with an authenticated app
 
-consumerKey <- "wtWw3J6IzZhW5vtlNhJ16xfVS"
-consumerSecret <- "rw6G0ErwEEos6Xvl6ua59csCCuGZwkHJZ1IOZ94PAV5OvVHAeq"
-accessToken <- "3060634116-BRClW1IjisNuVAP1LMphUHSWFx4DWWOBQjfWThE"
-accessTokenSecret <- "SPZS5erC2jyhVkuxcvvtO1xyOuUupA8WySME9htg9Xy00"
+consumerKey <- "HIe2XrWNqcHX1KsoHF1HWkmcV"
+consumerSecret <- "SImYk27PgiE6ockPjMbKjtahfzztZDv2N3mtRFh1GdemUT5sm7"
+accessToken <- "841573177-LVleaagDeAk8k1lvnvVFjL9aJ7QsNTIPsXf4V3CU"
+accessTokenSecret <- "u9L1nX6Vp5Hg1XRBhDgwwlxzJq96pUdiruf1nzOFXfpE8"
 
 setup_twitter_oauth(
   consumerKey,
@@ -27,6 +35,7 @@ setup_twitter_oauth(
 trump_tweets <- userTimeline("realDonaldTrump", n = 3200)
 trump_tweets_df <- tbl_df(map_df(trump_tweets, as.data.frame))
 
+install.packages("tidyr")
 library(tidyr)
 
 tweets <- trump_tweets_df %>%

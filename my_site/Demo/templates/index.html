@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->
+<!--[if !IE]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+	<title>SentiLab NCKU</title>
+
+	<!-- Meta -->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+	<!-- Favicon -->
+	<link rel="shortcut icon" href="static/img/favicon.ico">
+
+	<!-- Web Fonts -->
+<link href='https://fonts.googleapis.com/css?family=Ek+Mukta:400,600,700' rel='stylesheet' type='text/css'>	<link href='https://fonts.googleapis.com/css?family=Niconne' rel='stylesheet' type='text/css'>
+
+	<!-- CSS Global Compulsory -->
+  <link rel="stylesheet" href= "{{ url_for('static', filename='plugins/bootstrap/css/bootstrap.min.css') }}">
+  <link rel="stylesheet" href= "{{ url_for('static', filename='css/app.css') }}">
+  <link rel="stylesheet" href= "{{ url_for('static', filename='css/blocks.css') }}">
+  <link rel="stylesheet" href= "{{ url_for('static', filename='css/one.style.css') }}">
+
+	<!-- CSS Footer -->
+	<link rel="stylesheet" href= "{{ url_for('static', filename='css/footer-v2.css') }}">
+
+	<!-- CSS Implementing Plugins -->
+	<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/animate.css') }}">
+	<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/line-icons/line-icons.css') }}">
+	<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/font-awesome/css/font-awesome.min.css') }}">
+	<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/owl-carousel2/static/owl.carousel.css') }}">
+	<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/cube-portfolio/cubeportfolio/css/cubeportfolio.min.css') }}">
+	<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/cube-portfolio/cubeportfolio/custom/custom-cubeportfolio.css') }}">
+	<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/hover-effects/css/custom-hover-effects.css') }}">
+	<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/sky-forms-pro/skyforms/css/sky-forms.css') }}">
+	<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/sky-forms-pro/skyforms/custom/custom-sky-forms.css') }}">
+	<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/pace/pace-flash.css') }}">
+
+  <!-- CSS Theme -->
+  <link rel="stylesheet" href= "{{ url_for('static', filename='css/courses.style.css') }}">
+  <link rel="stylesheet" href= "{{ url_for('static', filename='css/global.css') }}">
+  <link rel="stylesheet" href= "{{ url_for('static', filename='css/lawyer.style.css') }}">
+
+  <!-- CSS Customization -->
+  <link rel="stylesheet" href= "{{ url_for('static', filename='css/custom.css') }}">
+</head>
+
+<body id="body" data-spy="scroll" data-target=".one-page-header" class="demo-lightbox-gallery font-main promo-padding-top">
+	<main class="wrapper">
+		<!-- Header -->
+		<nav class="header one-page-header navbar navbar-default navbar-fixed-top courses-header one-page-nav-scrolling one-page-nav__fixed" data-role="navigation">
+			<div class="container-fluid g-pr-40 g-pl-40">
+				<div class="menu-container page-scroll">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+					</button>
+
+					<a class="navbar-brand" href="/">
+						<img class="img-responsive" src="static/img/logo.png" alt="Logo">
+					</a>
+				</div>
+
+				<!-- Collect the nav links, forms, and other content for toggling -->
+				<div class="collapse navbar-collapse navbar-ex1-collapse g-pt-25">
+					<div class="menu-container">
+						<ul class="nav navbar-nav">
+							<li class="page-scroll home nav__text">
+								<a href="/">Home</a>
+							</li>
+							<li class="page-scroll nav__text">
+								<a href="/about">About</a>
+							</li>
+							<li class="page-scroll nav__text">
+								<a href="/sentilive">Senti Live</a>
+							</li>
+							<li class="page-scroll nav__text">
+								<a href="/sentianalysis">Senti Analysis</a>
+							</li>
+							<li class="page-scroll nav__text">
+								<a href="/graph">Graph</a>
+							</li>
+							<li class="page-scroll nav__text">
+								<a href="/references">References</a>
+							</li>
+							<li class="page-scroll nav__text g-sm-mb-20">
+								<a href="/contact">Contact</a>
+							</li>
+							<li class="clearfix">
+								<ul class="list-inline hidden-md pull-md-right nav__socials">
+									<li>
+										<a href="#" class="nav__social g-ml-15 g-sm-ml-0">
+											<i class="icon-custom icon-sm rounded-x fa fa-twitter"></i>
+										</a>
+									</li>
+									<li>
+										<a href="#" class="nav__social">
+											<i class="icon-custom icon-sm rounded-x fa fa-facebook"></i>
+										</a>
+									</li>
+								</ul>
+							</li>
+						</ul>
+				</div>
+				<!-- /.navbar-collapse -->
+			</div>
+			<!-- /.container -->
+		</nav>
+		<!-- End Header -->
+		<!-- Home section -->
+		<section class="promo-section" id="intro">
+		<div class="container-fluid pattern-v2">
+			<div class="container g-pt-100 g-pb-40">
+				<div class="row">
+					<div class="col-sm-8 col-sm-offset-2">
+						<div class="g-heading-v9 text-center g-mb-30">
+							<center><img class="img-responsive" src="static/img/logo.png" alt="Logo"></center>
+						</div>
+						<p class="text-center g-fs-16 g-mb-60"> Final project of Multimedia Cloud Computing and Machine Learning</p>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-sm-6 content-boxes-v7">
+						<i class="fa fa-user-secret pull-left g-theme-text-color-1"></i>
+						<div class="content-boxes-in-v7">
+							<h4 class="text-uppercase"><strong>Deep Learning for Sentiment Analysis</strong></h4>
+							<p>Method: Recursive Neural Tensor Network</p>
+						</div>
+					</div>
+					<div class="col-sm-6 content-boxes-v7">
+						<i class="fa fa-institution pull-left g-theme-text-color-1"></i>
+						<div class="content-boxes-in-v7">
+							<h4 class="text-uppercase"><strong>Develop Enviorment</strong></h4>
+							<p>Mac iOS, Windows 10</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-sm-6 content-boxes-v7">
+						<i class="fa fa-suitcase pull-left g-theme-text-color-1"></i>
+						<div class="content-boxes-in-v7">
+							<h4 class="text-uppercase"><strong>Language</strong></h4>
+							<p>Machine Learning: Python, R</p>
+							<p>Project web: HTML, CSS, Javasript</p>
+						</div>
+					</div>
+					<div class="col-sm-6 content-boxes-v7">
+						<i class="fa fa-money pull-left g-theme-text-color-1"></i>
+						<div class="content-boxes-in-v7">
+							<h4 class="text-uppercase"><strong>Training Dataset</strong></h4>
+							<p>Movie reviews</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- End Home section -->
+	
+
+		<!-- Footer -->
+		<footer class="footer">
+			<div class="container-fluid no-padding pattern-v1">
+				<div class="g-pt-60 g-pb-40">
+					<div class="container">
+						<div class="row">
+							<div class="col-md-3 col-sm-6 col-xs-8 col-xs-offset-2 col-sm-offset-0 text-left g-pt-10">
+								<img class="img-responsive g-mb-20 footer-logo__img" src="static/img/logo.png" alt="">
+								<p class="footer__text g-mb-20">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vitae est lorem. Aenean imperdiet nisi a dolor condimentum, id ullamcorper lacus vestibulum.</p>
+								<ul class="list-inline">
+									<li>
+										<a href="#" class="footer__social">
+											<i class="icon-custom icon-sm rounded-x fa fa-twitter"></i>
+										</a>
+									</li>
+									<li>
+										<a href="#" class="footer__social">
+											<i class="icon-custom icon-sm rounded-x fa fa-pinterest-p"></i>
+										</a>
+									</li>
+									<li>
+										<a href="#" class="footer__social">
+											<i class="icon-custom icon-sm rounded-x fa fa-facebook"></i>
+										</a>
+									</li>
+								</ul>
+							</div>
+
+							<div class="col-md-3 col-sm-6 col-xs-8 col-xs-offset-2 col-sm-offset-0 text-left">
+								<h2 class="footer__subtitle font-main">Latest posts</h2>
+								<div class="media">
+								  <div class="media-left">
+								    <a href="#">
+								      <img class="media-object footer-post__img" src="static/img-temp/post-footer1.jpg" alt="">
+								    </a>
+								  </div>
+								  <div class="media-body">
+								  	<span class="footer-post__date">April 27, 2015</span>
+								    <h3 class="footer-post__title font-main"><a href="#">Mauris tellus magna, pretium a feugiat</a></h3>
+								  </div>
+								</div>
+
+								<div class="media">
+								  <div class="media-left">
+								    <a href="#">
+								      <img class="media-object footer-post__img" src="static/img-temp/post-footer2.jpg" alt="">
+								    </a>
+								  </div>
+								  <div class="media-body">
+								  	<span class="footer-post__date">March 31, 2015</span>
+								    <h3 class="footer-post__title font-main"><a href="#">Mauris tellus magna, pretium a feugiat</a></h3>
+								  </div>
+								</div>
+							</div>
+
+							<div class="col-md-3 col-sm-6 col-xs-8 col-xs-offset-2 col-sm-offset-0 text-left">
+								<h2 class="footer__subtitle font-main">useful links</h2>
+								<ul class="list-unstyled">
+									<li class="g-mb-5"><a href="" class="footer__ulink">- Fusce dolor libero, efficitur et lobortis</a></li>
+									<li class="g-mb-5"><a href="" class="footer__ulink">- Proin fermentum turpis eget nisi</a></li>
+									<li class="g-mb-5"><a href="" class="footer__ulink">- Mauris sodales tellus vel felis dapibus</a></li>
+									<li class="g-mb-5"><a href="" class="footer__ulink">- Ut pulvinar tellus sed elit luctus</a></li>
+									<li class="g-mb-5"><a href="" class="footer__ulink">- Proin sollicitudin turpis in massa rutrum</a></li>
+									<li><a href="" class="footer__ulink">- Vestibulum semper</a></li>
+								</ul>
+							</div>
+
+							<div class="col-md-3 col-sm-6 col-xs-8 col-xs-offset-2 col-sm-offset-0 text-left ">
+								<h2 class="footer__subtitle font-main">Some photos</h2>
+								<!-- Photostream -->
+								<ul class="list-inline blog-photostream">
+									<li class="img-hover-v2">
+										<a href="static/img-temp/gallery1.jpg" class="cbp-caption cbp-lightbox" title="Image 1">
+											<span><img class="img-responsive" src="static/img-temp/footer__gallery1.jpg" alt=""></span>
+										</a>
+									</li>
+									<li class="img-hover-v2">
+										<a href="static/img-temp/gallery2.jpg" class="cbp-caption cbp-lightbox" title="Image 2">
+											<span><img class="img-responsive" src="static/img-temp/footer__gallery2.jpg" alt=""></span>
+										</a>
+									</li>
+									<li class="img-hover-v2">
+										<a href="static/img-temp/gallery3.jpg" class="cbp-caption cbp-lightbox" title="Image 3">
+											<span><img class="img-responsive" src="static/img-temp/footer__gallery3.jpg" alt=""></span>
+										</a>
+									</li>
+									<li class="img-hover-v2">
+										<a href="static/img-temp/gallery4.jpg" class="cbp-caption cbp-lightbox" title="Image 4">
+											<span><img class="img-responsive" src="static/img-temp/footer__gallery4.jpg" alt=""></span>
+										</a>
+									</li>
+									<li class="img-hover-v2">
+										<a href="static/img-temp/gallery5.jpg" class="cbp-caption cbp-lightbox" title="Image 5">
+											<span><img class="img-responsive" src="static/img-temp/footer__gallery5.jpg" alt=""></span>
+										</a>
+									</li>
+									<li class="img-hover-v2">
+										<a href="static/img-temp/gallery6.jpg" class="cbp-caption cbp-lightbox" title="Image 6">
+											<span><img class="img-responsive" src="static/img-temp/footer__gallery6.jpg" alt=""></span>
+										</a>
+									</li>
+								</ul>
+								<!-- End Photostream -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</footer>
+		<!-- End Footer -->
+	</main>
+
+	<!-- JS Global Compulsory -->
+
+	<script src= "{{ url_for('static', filename='plugins/jquery/jquery.min.js') }}"></script>
+	<script src= "{{ url_for('static', filename='plugins/jquery/jquery-migrate.min.js') }}"></script>
+	<script src= "{{ url_for('static', filename='plugins/bootstrap/js/bootstrap.min.js') }}"></script>
+
+	<!-- JS Implementing Plugins -->
+	<script src= "../static/plugins/smoothScroll.js"></script>
+	<script src="../static/plugins/jquery.easing.min.js"></script>
+	<script src="../static/plugins/pace/pace.min.js"></script>
+	<script src="../static/plugins/owl-carousel2/owl.carousel.min.js"></script>
+	<script src="../static/plugins/counter/waypoints.min.js"></script>
+	<script src="../static/plugins/counter/jquery.counterup.min.js"></script>
+	<script src="../static/plugins/circles-master/circles.min.js"></script>
+	<script src="../static/plugins/sky-forms-pro/skyforms/js/jquery.form.min.js"></script>
+	<script src="../static/plugins/sky-forms-pro/skyforms/js/jquery.validate.min.js"></script>
+	<script src="../static/plugins/cube-portfolio/cubeportfolio/js/jquery.cubeportfolio.min.js"></script>
+	<script src="../static/plugins/modernizr.js"></script>
+
+	<!-- Google Map -->
+	<script src="https://maps.googleapis.com/maps/api/js?signed_in=true&amp;callback=initMap" async defer></script><script src="static/js/plugins/gmaps-ini.js"></script>
+
+	<!-- JS Page Level-->
+	<script src="../static/js/one.app.js"></script>
+	<script src="static/js/plugins/owl2-carousel-v1.js"></script>
+	<script src="static/js/plugins/owl2-carousel-v2.js"></script>
+	<script src="static/js/plugins/owl2-carousel-v3.js"></script>
+	<script src="static/js/plugins/owl2-carousel-v4.js"></script>
+	<script src="static/js/plugins/owl2-carousel-v5.js"></script>
+	<script src="static/js/plugins/cube-portfolio.js"></script>
+	<script src="static/js/plugins/gmaps-ini.js"></script>
+	<script src="static/js/forms/contact.js"></script>
+	<script>
+		$(function() {
+			App.init();
+			App.initCounter();
+			Owl2Carouselv1.initOwl2Carouselv1();
+			Owl2Carouselv2.initOwl2Carouselv2();
+			Owl2Carouselv3.initOwl2Carouselv3();
+			Owl2Carouselv4.initOwl2Carouselv4();
+			Owl2Carouselv5.initOwl2Carouselv5();
+			ContactForm.initContactForm();
+		});
+	</script>
+	<!--[if lt IE 10]>
+	  <script src="../static/plugins/sky-forms-pro/skyforms/js/jquery.placeholder.min.js"></script>
+	<![endif]-->
+</body>
+</html>
