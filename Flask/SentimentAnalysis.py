@@ -16,6 +16,8 @@ from nltk.tokenize import word_tokenize
 ##    most = (max(list(map(array.count, array))))
 ##    return list(set(filter(lambda x: array.count(x) == most, array)))
 
+DATA_NUM = 1900
+
 def mode(array):
     return max(array, key = array.count)
 
@@ -47,6 +49,15 @@ class VoteClassifier(ClassifierI):
         choiceVotes = votes.count(mode(votes))
         conf = choiceVotes / len(votes)
         return conf
+
+    def accuracy(testSet):
+        num = len(testSet)
+        correct = 0
+
+        for test in testSet:
+            cla
+        
+        return
     
 def findFeatures(document):
     ##to let the list loop
@@ -85,13 +96,15 @@ classifierNames = ["NaiveBayes",
 classifiers = []
 
 ##to define the style. 0 => Normal style. Load documents, train, and save classifier. 1 => Module style. Load vote classifier 
-style = 1
+style = 0
 
 if style == 0:
 ##    to load the movie reviews text
     documents = [(list(movie_reviews.words(fileid)), category)
                  for category in movie_reviews.categories()
                  for fileid in movie_reviews.fileids(category)]
+
+    print(documents[0])
 
 ##    to random the order in movie reviews
     random.shuffle(documents)
@@ -127,8 +140,8 @@ if style == 0:
 ##    print(featureSets[0])
 
 ##    to set the training set and test set
-    trainingSet = featureSets[:1500]
-    testSet = featureSets[1500:]
+    trainingSet = featureSets[:DATA_NUM]
+    testSet = featureSets[DATA_NUM:]
 
 ##    to use the naive bayes classifier to train
     classifiers.append(nltk.NaiveBayesClassifier.train(trainingSet))
@@ -157,7 +170,7 @@ if style == 0:
 
 ##    to train the classifier
     length = len(classifiers)
-##    print(length)
+    print('used classifier number = ', length)
 
 ##    except naive bayes classifier
     for i in range(1, length):
@@ -175,6 +188,9 @@ if style == 0:
     classifiers.append(voteClassifier)
 
 ##    to predict
+    testNum = len(testSet)
+    print('test number = ', testNum)
+    
     length = len(classifiers)
     for i in range(0, length):
         print(classifierNames[i], "Algo accuracy percent: ", (nltk.classify.accuracy(classifiers[i], testSet)) * 100)
@@ -182,8 +198,11 @@ if style == 0:
 ##    classifier.show_most_informative_features(15)##    print(testSet[0][0])
 
 ##    to predict by vote classifier
-    for i in range(0, 6):
-        print("Classification: ", voteClassifier.classify(testSet[i][0]), " Confidence: ", voteClassifier.confidence(testSet[i][0]))
+    
+##    for i in range(0, testNum):
+##        print("Classification: ", voteClassifier.classify(testSet[i][0]), " Confidence: ", voteClassifier.confidence(testSet[i][0]))
+
+    print('Voting classifier accuracy percent = ', voteClassifier.accuracy(testSet) * 100)
 
 ##    to save the classifier as pickle
     length = len(classifierNames)
