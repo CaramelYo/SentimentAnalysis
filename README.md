@@ -1,3 +1,6 @@
+# Web Link
+http://luffy.ee.ncku.edu.tw:8454/
+
 Parse data from twitter!!
 
 
@@ -27,4 +30,4 @@ hashtag2 = result[1]  # The reviews of second trend
 hasgtage = result[10] # The overall table of all trend
 
 
-
+# Part for SentimentAnalysis

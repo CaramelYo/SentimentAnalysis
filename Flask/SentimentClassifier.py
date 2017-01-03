@@ -20,22 +20,27 @@ vocabulary = []
 classifiers = []
 stopWords = stopwords.words('english')
 wordTypes = ['JJ', 'JJR', 'JJS', 'NN', 'NNS', 'RB', 'RBS', 'UH', 'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ']
+trainingRatio = 0.9
+trainingSize = 500
 threshold = 0.7
 
-DATA_NUM = 1900
+# classifierNames = ["MNB",
+#                    "BNB",
+#                    "LogisticRegression",
+#                    "SGD",
+#                    "LinearSVC",
+#                    "NuSVC",
+#                    "Voting"]
 
 classifierNames = ["MNB",
                    "BNB",
-                   "LogisticRegression",
                    "SGD",
-                   "LinearSVC",
-                   "NuSVC",
                    "Voting"]
 
 ##to define the style. 0 => Normal style. Load documents, train, and save classifier. 1 => Module style. Load vote classifier 
 style = 0
 ##to define the mode of select word. 0 => use word types. 1 => no word types
-selectingWordsMode = 0
+# selectingWordsMode = 0
 ##to define whether the vocabulary need to be created. 0 => no. 1 => yes
 isSetVocabulary = 1
 
@@ -53,73 +58,77 @@ def wordsFilter(data):
 ##  getting the "if selectingWordsMode" out could improve the performance
     newWords = []
 
-    if selectingWordsMode == 0:
-        pos = nltk.pos_tag(data[0])
-        for w in pos:
-            if w[1] in wordTypes and w[0] not in stopWords and w[0] not in newWords:
-                newWords.append(w[0])
-    elif selectingWordsMode == 1:
-        for word in words:
-            if word not in stopWords and word not in newWords:
-                newWords.append(word)
-    
+    pos = nltk.pos_tag(data[0])
+    for w in pos:
+        if w[1] in wordTypes and w[0] not in stopWords and w[0] not in newWords:
+            newWords.append(w[0])
+
     data[0] = newWords
     del newWords
+
+    # if selectingWordsMode == 0:
+    #     pos = nltk.pos_tag(data[0])
+    #     for w in pos:
+    #         if w[1] in wordTypes and w[0] not in stopWords and w[0] not in newWords:
+    #             newWords.append(w[0])
+    # elif selectingWordsMode == 1:
+    #     for word in words:
+    #         if word not in stopWords and word not in newWords:
+    #             newWords.append(word)
+    
+    # data[0] = newWords
+    # del newWords
 
 def wordsFilterWithVocabulary(data):
 ##  getting the "if selectingWordsMode" out could improve the performance
     newWords = []
 
-    if selectingWordsMode == 0:
-        pos = nltk.pos_tag(data[0])
-        for w in pos:
-            if w[1] in wordTypes and w[0] not in stopWords and w[0] not in newWords:
-                newWords.append(w[0])
-                if w[0] not in vocabulary:
-                    vocabulary.append(w[0])
-    elif selectingWordsMode == 1:
-        for word in words:
-            if word not in stopWords and word not in newWords:
-                newWords.append(word)
-                if word not in vocabulary:
-                    vocabulary.append(word)
+    pos = nltk.pos_tag(data[0])
+    for w in pos:
+        if w[1] in wordTypes and w[0] not in stopWords and w[0] not in newWords:
+            newWords.append(w[0])
+            if w[0] not in vocabulary:
+                vocabulary.append(w[0])
 
     data[0] = newWords
     del newWords
 
-def buildLDAFeatures(zeros, words):
-    global vocabulary
-
-    features = zeros[:]
-    for word in words:
-        features[vocabulary.index(word)] += 1
-    
-    return features
+    # if selectingWordsMode == 0:
+    #     pos = nltk.pos_tag(data[0])
+    #     for w in pos:
+    #         if w[1] in wordTypes and w[0] not in stopWords and w[0] not in newWords:
+    #             newWords.append(w[0])
+    #             if w[0] not in vocabulary:
+    #                 vocabulary.append(w[0])
+    # elif selectingWordsMode == 1:
+    #     for word in words:
+    #         if word not in stopWords and word not in newWords:
+    #             newWords.append(word)
+    #             if word not in vocabulary:
+    #                 vocabulary.append(word)
 
 def buildClassifierFeatures(words):
-##    features = {}
-
     features = []
     for v in vocabulary:
         features.append(v in words)
-##        features[v] = (v in words)
     
     return features
 
 def buildTargetedClassifierFeatures(targetedData):
-    trainingClassifierFeatures = []
-    trainingTarget = []
+    classifierFeatures = []
+    targets = []
     for data in targetedData:
-        trainingClassifierFeatures.append(buildClassifierFeatures(data[0]))
-        trainingTarget.append(data[1])
+        classifierFeatures.append(buildClassifierFeatures(data[0]))
+        targets.append(data[1])
 
-    trainingClassifierFeatures = np.array(trainingClassifierFeatures)
-    trainingTarget = np.array(trainingTarget)
+    # to change type to np
+    classifierFeatures = np.array(classifierFeatures)
+    targets = np.array(targets)
 
-    print(trainingClassifierFeatures.shape)
-    print(trainingTarget.shape)
+    # print(classifierFeatures.shape)
+    # print(targets.shape)
     
-    return trainingClassifierFeatures, trainingTarget
+    return classifierFeatures, targets
 
 def writeToTxt(data, fileName):
     with open(fileName + '.txt', 'w') as file:
@@ -162,10 +171,11 @@ class VoteClassifier(ClassifierI):
         votes = []
         for c in self._classifiers:
             v = c.predict(feature)
+            # why v[0]
             votes.append(v[0])
+
         ##mode(): return the most common data
         ##when the numbers of two data are the same, get error
-            
         return mode(votes)
 
     def confidence(self, feature):
@@ -195,55 +205,60 @@ def main():
         dataset = loadData()
         random.shuffle(dataset)
 
-        # to get the part of dataset
+        # # to get the part of dataset
         # dataset = dataset[:1000]
 
         # to filter data
         print('filtering data start')
-        
         if isSetVocabulary == 1:
             for data in dataset:
                 wordsFilterWithVocabulary(data)
                 
             save(vocabulary, 'Vocabulary')
-            print('building vocabulary is completed\nvocabulary size =', len(vocabulary))
+            print('building vocabulary is completed and saved\nvocabulary size =', len(vocabulary))
         elif isSetVocabulary == 0:
             for data in dataset:
                 wordsFilter(data)
 
-        # for data in dataset:
-        #     wordsFilter(data)
-        
         print('filtering data is completed')
 
-        print('save filetered dataset')
+        print('saving filtered dataset start')
         save(dataset, 'FilteredDataset')
+        print('saving filtered dataset end')
 
+        # # to get data from pickle
         # global vocabulary
         # dataset = load('FilteredDataset')
         # vocabulary = load('Vocabulary')
-        
-##        global vocabulary
-##        save(vocabulary, 'Vocabulary')
-##        print('vocabulary size =', len(vocabulary))
 
-##        global vocabulary
-##        vocabulary = load('Vocabulary')
+        # to split dataset into two part, training data and test data
+        totalSize = len(dataset)
+        print('total size = ', totalSize)
+        trainingDataSize = int(totalSize * trainingRatio)
+        testDataSize = totalSize - trainingDataSize
+        print('training data size = ', trainingDataSize)
+        print('test data size = ', testDataSize)
+        trainingData = dataset[:trainingDataSize]
+        testData = dataset[trainingDataSize:]
 
-        trainingData = dataset[:DATA_NUM]
-        testData = dataset[DATA_NUM:]
-        
         del dataset
 
         print('training targeted classifier features start')
-        trainingClassifierFeatures, trainingTarget = buildTargetedClassifierFeatures(trainingData)
-##        print(trainingTargetedClassifierFeatures[0])
-##        save(trainingTargetedClassifierFeatures, 'trainingTargetedClassifierFeatures')
+        trainingClassifierFeatures, trainingTargets = buildTargetedClassifierFeatures(trainingData)
         print('training targeted classifier features are completed')
 
-##      to train the sentiment models
+        print('saving training classifier features and training targets start')
+        save(trainingClassifierFeatures, 'TrainingClassifierFeatures')
+        save(trainingTargets, 'TrainingTargets')
+        print('saving training classifier features and training targets end')
+
+        # # to get data from pickle
+        # trainingClassifierFeatures = load('TrainingClassifierFeatures')
+        # trainingTargets = load('TrainingTargets')
+
+        # to train the sentiment models
         global classifiers
-        print('classifiers training start!')
+        print('classifiers creating start')
         gc.collect()
         
 ##      to use the naive bayes classifier to train. [ [{}, ''] , ....]
@@ -258,9 +273,9 @@ def main():
 ##    BernoulliNB
 ##        classifiers.append(SklearnClassifier(BernoulliNB()))
         classifiers.append(BernoulliNB())
-##    LogisticRegression
+##    LogisticRegression abort because it doesn't have 'partial_fit'
 ##        classifiers.append(SklearnClassifier(LogisticRegression()))
-        classifiers.append(LogisticRegression())
+        # classifiers.append(LogisticRegression())
 
 ##    SGDClassifier
 ##        classifiers.append(SklearnClassifier(SGDClassifier()))
@@ -271,110 +286,109 @@ def main():
 
 ##    LinearSVC
 ##        classifiers.append(SklearnClassifier(LinearSVC()))
-        classifiers.append(LinearSVC())
+        # classifiers.append(LinearSVC())
 
 ##    NuSVC
 ##        classifiers.append(SklearnClassifier(NuSVC()))
-        classifiers.append(NuSVC())
+        # classifiers.append(NuSVC())
 
-##    to train the classifier
+        print('classifiers creating end')
+
+        # to train the classifier
         classifierNumber = len(classifiers)
         print('used classifier number = ', classifierNumber)
 
-##    except naive bayes classifier
-        for i in range(classifierNumber):
-            print('i = ', i)
-            classifiers[i].fit(trainingClassifierFeatures, trainingTarget)
+# ##    except naive bayes classifier
+#         for i in range(classifierNumber):
+#             # print('i = ', i)
+#             classifiers[i].fit(trainingClassifierFeatures, trainingTarget)
 
-##    to use our vote classifier
+        print('classifiers partial training start')
+        start = 0
+        end = 0
+        tempSize = trainingDataSize
+        # it is passed to partial_fit when first call
+        allTargets = np.array(['neg', 'pos'])
+
+        # first call
+        if(tempSize > trainingSize):
+            end += trainingSize
+            for i in range(classifierNumber):
+                # print('i = ', i)
+                classifiers[i].partial_fit(trainingClassifierFeatures[start: end], trainingTargets[start: end], classes = allTargets)
+
+            tempSize -= trainingSize
+            start = end
+
+        # to partially train continually
+        while(tempSize > trainingSize):
+            end += trainingSize
+            for i in range(classifierNumber):
+                classifiers[i].partial_fit(trainingClassifierFeatures[start: end], trainingTargets[start: end])
+
+            tempSize -= trainingSize
+            start = end
+
+        # last call
+        end += tempSize
+        for i in range(classifierNumber):
+            classifiers[i].partial_fit(trainingClassifierFeatures[start: end], trainingTargets[start: end])
+
+        # to use our vote classifier
+        # can use function like 'add' to add classifier?
         voteClassifier = VoteClassifier(classifiers[0],
                                         classifiers[1],
-                                        classifiers[2],
-                                        classifiers[3],
-                                        classifiers[4],
-                                        classifiers[5])
+                                        classifiers[2])
         classifiers.append(voteClassifier)
 
-        print('classifiers training end!')
+        print('classifiers partial training start')
 
-##      to predict
-##        testClassifierFeatures = [(buildClassifierFeatures(data[0])) for data in testData]
-##        save(testClassifierFeatures, 'testClassifierFeatures')
-##        print('test classifier features are completed')
-        
-##        testTargetedClassifierFeatures = [buildTargetedClassifierFeatures(data) for data in testData]
-##        save(testTargetedClassifierFeatures, 'testTargetedClassifierFeatures')
-        testClassifierFeatures, testTarget = buildTargetedClassifierFeatures(testData)
+        print('test targeted classifier features start')
+        testClassifierFeatures, testTargets = buildTargetedClassifierFeatures(testData)
         print('test targeted classifier features are completed')
+
+        print('saving test classifier features and test targets start')
+        save(testClassifierFeatures, 'TestClassifierFeatures')
+        save(testTargets, 'TestTargets')
+        print('saving test classifier features and test targets end')
         
+        # to predict
         print('predicting start')
 
-##        for i in range(len(classifiers)):
-##            print(classifierNames[i], 'Algo accuracy percent: ', (nltk.classify.accuracy(classifiers[i], testTargetedClassifierFeatures)) * 100)
         for i in range(len(classifiers)):
-            print(classifierNames[i], 'Algo accuracy percent: ', (accuracy(classifiers[i], testClassifierFeatures, testTarget)) * 100)
+            print(classifierNames[i], 'Algo accuracy percent: ', (accuracy(classifiers[i], testClassifierFeatures, testTargets)) * 100)    
+            # print("Classification: ", voteClassifier.classify(test[0]), " Confidence: ", voteClassifier.confidence(test[0]), 'in real: ', test[1])
 
-##        for test in testTargetedClassifierFeatures:
-##            print("Classification: ", voteClassifier.classify(test[0]), " Confidence: ", voteClassifier.confidence(test[0]), 'in real: ', test[1])
-
-##      to save the classifier as pickle
-        for i in range(classifierNumber):
+        # to save the classifier as pickle except vote classifier
+        temp = classifierNumber - 1
+        for i in range(temp):
             save(classifiers[i], classifierNames[i])
         
-##        predictions = []
-##
-##        for feature in testClassifierFeatures:
-##            predictions.append([voteClassifier.classify(feature), voteClassifier.confidence(feature)])
-##
-##        for prediction in predictions:
-##            print("Classification: ", prediction[0], " Confidence: ", prediction[1])
+        # # to add good test data into training data
+        # predictions = []
+        # for feature in testClassifierFeatures:
+        #     predictions.append([voteClassifier.classify(feature), voteClassifier.confidence(feature)])
 
-####      to add to training targetd classifier features if confidence > threshold
-##        newTestClassifierFeatures = []
-##        newTestData = []
-##        for i in range(len(predictions)):
-##            if predictions[i][1] > threshold:
-##                trainingData.append(testData[i])
-##                trainingTargetedClassifierFeatures.append([testClassifierFeatures[i], predictions[i][0]])
-##            else:
-##                newTestData.append(testData[i])
-##                newTestClassifierFeatures.append(testClassifierFeatures[i])
-##
-##        testData = newTestData
-##        testClassifierFeatures = newTestClassifierFeatures
-        
-####      to train the LDA
-##        zeros = [0 for n in range(len(vocabulary))]
-##        trainingLDAFeatures = [(buildLDAFeatures(zeros, data[0])) for data in trainingData]
-##
-##        print('LDA start')
-##        model = LDA(n_topics = 2, max_iter = 1500, learning_method = 'online')
-##        topicDistributions = model.fit_transform(trainingLDAFeatures)
-##        print('LDA end')
-##
-##        save(model, 'LDAModel')
-##
-##        for distribution in topicDistributions:
-##            print(distribution)
-##
-##        
-##
-##        
-##
-##        testFeatures = [buildFeatures(zeros, i, testData[i][0]) for i in range(len(testData))]
-##        print(model.transform(testFeatures))
-##
-##        print('ground truth')
-##        for data in testData:
-##            print(data[1])
-##
-####        topic = model.components_
-####        print(topic)
-##
-##        n_top_words = 8
-##        for i, topic_dist in enumerate(model.components_):
-##            topic_words = np.array(vocabulary)[np.argsort(topic_dist)][:-(n_top_words+1):-1]
-##            print('Topic {}: {}'.format(i, ' '.join(topic_words)))
+        # for prediction in predictions:
+        #     print("Classification: ", prediction[0], " Confidence: ", prediction[1])
+
+        # # to add to training targetd classifier features if confidence > threshold
+        # # newTestClassifierFeatures = []
+        # # newTestData = []
+        # for i in range(len(predictions)):
+        #     if predictions[i][1] > threshold:
+        #         trainingData.append(testData[i])
+        #         trainingClassifierFeatures.append(testClassifierFeatures[i])
+        #         trainingTargets.append(predictions[i][0])
+
+        #         testData.remove(testData[i])
+        #         testClassifierFeatures.remove(testClassifierFeatures[i])
+        #     # else:
+        #     #     newTestData.append(testData[i])
+        #     #     newTestClassifierFeatures.append(testClassifierFeatures[i])
+
+        # # testData = newTestData
+        # # testClassifierFeatures = newTestClassifierFeatures
     elif style == 1:
         print('YO')
         
