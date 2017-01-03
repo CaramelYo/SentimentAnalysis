@@ -22,7 +22,6 @@ stopWords = stopwords.words('english')
 wordTypes = ['JJ', 'JJR', 'JJS', 'NN', 'NNS', 'RB', 'RBS', 'UH', 'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ']
 threshold = 0.7
 
-MAX_ITER = 1500
 DATA_NUM = 1900
 
 classifierNames = ["MNB",
@@ -74,7 +73,7 @@ def wordsFilterWithVocabulary(data):
     if selectingWordsMode == 0:
         pos = nltk.pos_tag(data[0])
         for w in pos:
-            if w[1][0] in wordTypes and w[0] not in stopWords and w[0] not in newWords:
+            if w[1] in wordTypes and w[0] not in stopWords and w[0] not in newWords:
                 newWords.append(w[0])
                 if w[0] not in vocabulary:
                     vocabulary.append(w[0])
@@ -99,6 +98,7 @@ def buildLDAFeatures(zeros, words):
 
 def buildClassifierFeatures(words):
 ##    features = {}
+
     features = []
     for v in vocabulary:
         features.append(v in words)
@@ -115,18 +115,24 @@ def buildTargetedClassifierFeatures(targetedData):
 
     trainingClassifierFeatures = np.array(trainingClassifierFeatures)
     trainingTarget = np.array(trainingTarget)
+
+    print(trainingClassifierFeatures.shape)
+    print(trainingTarget.shape)
     
     return trainingClassifierFeatures, trainingTarget
 
+def writeToTxt(data, fileName):
+    with open(fileName + '.txt', 'w') as file:
+        for word in data:
+            print(word, file = file)
+
 def save(data, fileName):
-    sf = open(fileName + '.pickle', 'wb')
-    pickle.dump(data, sf)
-    sf.close()
+    with open(fileName + '.pickle', 'wb') as file:
+        pickle.dump(data, file)
 
 def load(fileName):
-    lf = open(fileName + '.pickle', 'rb')
-    data = pickle.load(lf)
-    lf.close()
+    with open(fileName + '.pickle', 'rb') as file:
+        data = pickle.load(file)
     return data
 
 def accuracy(classifier, features, targets):
@@ -184,15 +190,15 @@ class VoteClassifier(ClassifierI):
 def main():
 ##  to disable the warnings
     warnings.filterwarnings("ignore")
-    
+
     if style == 0:
         dataset = loadData()
         random.shuffle(dataset)
 
-##      to get the part of dataset
-##        dataset = dataset[:100]
+        # to get the part of dataset
+        # dataset = dataset[:1000]
 
-##      to filter data
+        # to filter data
         print('filtering data start')
         
         if isSetVocabulary == 1:
@@ -204,8 +210,18 @@ def main():
         elif isSetVocabulary == 0:
             for data in dataset:
                 wordsFilter(data)
+
+        # for data in dataset:
+        #     wordsFilter(data)
         
         print('filtering data is completed')
+
+        print('save filetered dataset')
+        save(dataset, 'FilteredDataset')
+
+        # global vocabulary
+        # dataset = load('FilteredDataset')
+        # vocabulary = load('Vocabulary')
         
 ##        global vocabulary
 ##        save(vocabulary, 'Vocabulary')
@@ -226,11 +242,9 @@ def main():
         print('training targeted classifier features are completed')
 
 ##      to train the sentiment models
-
         global classifiers
         print('classifiers training start!')
         gc.collect()
-        
         
 ##      to use the naive bayes classifier to train. [ [{}, ''] , ....]
 ##        classifiers.append(nltk.NaiveBayesClassifier.train(trainingTargetedClassifierFeatures))
