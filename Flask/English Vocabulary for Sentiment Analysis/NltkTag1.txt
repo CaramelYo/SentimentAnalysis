@@ -1,0 +1,15 @@
+JJ         adjective or numeral, ordinal	形容詞/數詞	O
+JJR         adjective, comparative	比較級形容詞	O
+JJS         adjective, superlative	最高級形容詞	O
+NN         noun, common, singular or mass	常見名詞(單複數皆可?)	O
+NNS         noun, common, plural	複數名詞	O
+RB         adverb	副詞	O
+RBR         adverb, comparative	比較級副詞	O
+RBS         adverb, superlative	最高級副詞	O
+UH         interjection	感嘆詞	O
+VB         verb, base form	原形動詞	O
+VBD         verb, past tense	過去式動詞	O
+VBG         verb, present participle or gerund	動詞之現在分詞/動名詞	O
+VBN         verb, past participle	動詞之過去分詞	O
+VBP         verb, present tense, not 3rd person singular	現在式動詞(非三單)	O
+VBZ         verb, present tense, 3rd person singular	現在式動詞(三單) O
