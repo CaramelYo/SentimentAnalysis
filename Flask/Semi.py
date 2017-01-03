@@ -235,39 +235,39 @@ def main():
         testClassifierFeatures = newTestClassifierFeatures
         
 
-##      to train the LDA
-        zeros = [0 for n in range(len(vocabulary))]
-        trainingLDAFeatures = [(buildLDAFeatures(zeros, data[0])) for data in trainingData]
-
-        print('LDA start')
-        model = LDA(n_topics = 2, max_iter = 1500, learning_method = 'online')
-        topicDistributions = model.fit_transform(trainingLDAFeatures)
-        print('LDA end')
-
-        save(model, 'LDAModel')
-
-        for distribution in topicDistributions:
-            print(distribution)
-
-        
-
-        
-
-        testFeatures = [buildFeatures(zeros, i, testData[i][0]) for i in range(len(testData))]
-        print(model.transform(testFeatures))
-
-        print('ground truth')
-        for data in testData:
-            print(data[1])
-
-##        topic = model.components_
-##        print(topic)
-
-        n_top_words = 8
-        for i, topic_dist in enumerate(model.components_):
-            topic_words = np.array(vocabulary)[np.argsort(topic_dist)][:-(n_top_words+1):-1]
-            print('Topic {}: {}'.format(i, ' '.join(topic_words)))
-    elif style == 1:
-        print('YO')
+####      to train the LDA
+##        zeros = [0 for n in range(len(vocabulary))]
+##        trainingLDAFeatures = [(buildLDAFeatures(zeros, data[0])) for data in trainingData]
+##
+##        print('LDA start')
+##        model = LDA(n_topics = 2, max_iter = 1500, learning_method = 'online')
+##        topicDistributions = model.fit_transform(trainingLDAFeatures)
+##        print('LDA end')
+##
+##        save(model, 'LDAModel')
+##
+##        for distribution in topicDistributions:
+##            print(distribution)
+##
+##        
+##
+##        
+##
+##        testFeatures = [buildFeatures(zeros, i, testData[i][0]) for i in range(len(testData))]
+##        print(model.transform(testFeatures))
+##
+##        print('ground truth')
+##        for data in testData:
+##            print(data[1])
+##
+####        topic = model.components_
+####        print(topic)
+##
+##        n_top_words = 8
+##        for i, topic_dist in enumerate(model.components_):
+##            topic_words = np.array(vocabulary)[np.argsort(topic_dist)][:-(n_top_words+1):-1]
+##            print('Topic {}: {}'.format(i, ' '.join(topic_words)))
+##    elif style == 1:
+##        print('YO')
         
 main()
