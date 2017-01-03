@@ -1,15 +1,30 @@
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Dec 31 09:41:42 2016
+
+@author: royzhuang
+"""
+
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Dec 29 21:07:07 2016
+
+@author: royzhuang
+"""
+
 # Import the necessary package to process data in JSON format
 try:
     import json
 except ImportError:
     import simplejson as json
 
-import subprocess
 # Import the necessary methods from "twitter" library
-from twitter import Twitter, OAuth, TwitterHTTPError, TwitterStream
+from twitter import OAuth, TwitterStream
+import re
 
-
-def testparse(tra):
+def parsetw(track, number):    
     # Variables that contains the user credentials to access Twitter API
     ACCESS_TOKEN = '3060634116-BRClW1IjisNuVAP1LMphUHSWFx4DWWOBQjfWThE'
     ACCESS_SECRET = 'SPZS5erC2jyhVkuxcvvtO1xyOuUupA8WySME9htg9Xy00'
@@ -22,10 +37,12 @@ def testparse(tra):
     twitter_stream = TwitterStream(auth=oauth)
 
     # Get a sample of the public data following through Twitter
-    iterator = twitter_stream.statuses.filter(track = tra, language = "en")
+    iterator = twitter_stream.statuses.filter(track = track, language = "en")
 
-    tweet_count = 5
+    tweet_count = number
+    
     tweets = []
+
     for tweet in iterator:
         tweet_count -= 1
         # Twitter Python Tool wraps the data returned by Twitter
@@ -38,21 +55,27 @@ def testparse(tra):
 
     twittertext = []
     hashtags = []
-    for i in range(0, tweet_count, 1):
+
+
+    for i in range(0, len(tweets), 1):
         try:
-            tweet1 = json.loads(tweets[i])
-            if 'text' in tweet1:
-                print tweet1['text']
-                twittertext.append(tweet1['text'])
-            
-                for hashtag in tweet1['entities']['hashtags']:
+            x = json.loads(tweets[i])
+            if 'text' in x:
+                
+                twittertext.append(x['text'])
+        
+                for hashtag in x['entities']['hashtags']:
                     hashtags.append(hashtag['text'])
         except:
 
             continue
-
-def gcd(m, n):
-    if n == 0:
-        return m
-    else:
-        return gcd(n, m % n)
+    
+    
+    text = []
+    for i in range(0, len(twittertext), 1):
+        x = twittertext[i]
+        y = ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)"," ",x).split())
+        text.append(y)
+    
+    return(text)
+    
