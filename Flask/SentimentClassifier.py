@@ -79,6 +79,20 @@ def wordsFilter(data):
     # data[0] = newWords
     # del newWords
 
+def wordsFilterIntext(words):
+##  getting the "if selectingWordsMode" out could improve the performance
+    newWords = []
+
+    pos = nltk.pos_tag(words)
+    for w in pos:
+        if w[1] in wordTypes and w[0] not in stopWords and w[0] not in newWords:
+            newWords.append(w[0])
+
+    # data[0] = newWords
+    # words = newWords
+    # del newWords
+    return newWords
+
 def wordsFilterWithVocabulary(data):
 ##  getting the "if selectingWordsMode" out could improve the performance
     newWords = []
@@ -107,18 +121,20 @@ def wordsFilterWithVocabulary(data):
     #             if word not in vocabulary:
     #                 vocabulary.append(word)
 
-def buildClassifierFeatures(words):
-    features = []
+def buildClassifierFeature(words):
+    global vocabulary
+
+    feature = []
     for v in vocabulary:
-        features.append(v in words)
+        feature.append(v in words)
     
-    return features
+    return feature
 
 def buildTargetedClassifierFeatures(targetedData):
     classifierFeatures = []
     targets = []
     for data in targetedData:
-        classifierFeatures.append(buildClassifierFeatures(data[0]))
+        classifierFeatures.append(buildClassifierFeature(data[0]))
         targets.append(data[1])
 
     # to change type to np
@@ -197,9 +213,28 @@ class VoteClassifier(ClassifierI):
 
         return predictions
 
-def printString():
-    print('hello world')
-    return "hello world!!!!!"
+def predict(text):
+    print('text preprocessing starts')
+    print('filtering words starts')
+    words = word_tokenize(text)
+    words = wordsFilterIntext(words)
+    print('filtering words ends')
+
+    print('extracting feature starts')
+    feature = buildClassifierFeature(words)
+    print('extracting feature ends')
+
+    features = []
+    features.append(feature)
+    print('text preprocessing ends')
+
+    print('prediction starts')
+    predictionHtml = ''
+    for i in range(len(classifiers)):
+        predictionHtml += classifierNames[i] + ' predict that text is ' + classifiers[i].predict(features)[0] + '<br>'
+    print('prediction ends')
+
+    return predictionHtml
 
 def main():
 ##  to disable the warnings
@@ -401,10 +436,15 @@ def main():
         # trainingTargets = load('TrainingTargets')
         # print('loding training classifier features and training targets end')
 
-        print('loading test classifier features and test targets start')
-        testClassifierFeatures = load('TestClassifierFeatures')
-        testTargets = load('TestTargets')
-        print('loading test classifier features and test targets end')
+        # print('loading test classifier features and test targets start')
+        # testClassifierFeatures = load('TestClassifierFeatures')
+        # testTargets = load('TestTargets')
+        # print('loading test classifier features and test targets end')
+
+        print('loading vocabulary starts')
+        global vocabulary
+        vocabulary = load('Vocabulary')
+        print('loading vocabulary ends')
 
         print('loading classifiers starts')
         temp = len(classifierNames) - 1
@@ -417,9 +457,9 @@ def main():
         classifiers.append(voteClassifier)
         print('loading classifiers ends')
 
-        print('predicting start')
+        # print('predicting start')
 
-        for i in range(len(classifiers)):
-            print(classifierNames[i], 'Algo accuracy percent: ', (accuracy(classifiers[i], testClassifierFeatures, testTargets)) * 100)    
+        # for i in range(len(classifiers)):
+        #     print(classifierNames[i], 'Algo accuracy percent: ', (accuracy(classifiers[i], testClassifierFeatures, testTargets)) * 100)
         
 main()
