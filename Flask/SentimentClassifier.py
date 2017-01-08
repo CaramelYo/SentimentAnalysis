@@ -38,7 +38,7 @@ classifierNames = ["MNB",
                    "Voting"]
 
 ##to define the style. 0 => Normal style. Load documents, train, and save classifier. 1 => Module style. Load vote classifier 
-style = 0
+style = 1
 ##to define the mode of select word. 0 => use word types. 1 => no word types
 # selectingWordsMode = 0
 ##to define whether the vocabulary need to be created. 0 => no. 1 => yes
@@ -196,6 +196,10 @@ class VoteClassifier(ClassifierI):
 ##            print('confidence = ', self.confidence(feature))
 
         return predictions
+
+def printString():
+    print('hello world')
+    return "hello world!!!!!"
 
 def main():
 ##  to disable the warnings
@@ -390,6 +394,32 @@ def main():
         # # testData = newTestData
         # # testClassifierFeatures = newTestClassifierFeatures
     elif style == 1:
-        print('YO')
+        print('Module mode')
+
+        # print('loding training classifier features and training targets start')
+        # trainingClassifierFeatures = load('TrainingClassifierFeatures')
+        # trainingTargets = load('TrainingTargets')
+        # print('loding training classifier features and training targets end')
+
+        print('loading test classifier features and test targets start')
+        testClassifierFeatures = load('TestClassifierFeatures')
+        testTargets = load('TestTargets')
+        print('loading test classifier features and test targets end')
+
+        print('loading classifiers starts')
+        temp = len(classifierNames) - 1
+        for i in range(temp):
+            classifiers.append(load(classifierNames[i]))
+
+        voteClassifier = VoteClassifier(classifiers[0],
+                                        classifiers[1],
+                                        classifiers[2])
+        classifiers.append(voteClassifier)
+        print('loading classifiers ends')
+
+        print('predicting start')
+
+        for i in range(len(classifiers)):
+            print(classifierNames[i], 'Algo accuracy percent: ', (accuracy(classifiers[i], testClassifierFeatures, testTargets)) * 100)    
         
 main()
