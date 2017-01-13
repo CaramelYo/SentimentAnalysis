@@ -77,5 +77,5 @@ def parsetw(track, number):
         y = ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)"," ",x).split())
         text.append(y)
     
-    return(text)
+    return text, hashtags
     
