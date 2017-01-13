@@ -18,6 +18,10 @@ from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.svm import SVC, LinearSVC, NuSVC
 from sklearn.decomposition import LatentDirichletAllocation as LDA
 
+#import twittersearch as search
+#import twittertrend
+#import twitterstream as stream
+
 ##global info
 vocabulary = []
 classifiers = []
@@ -41,7 +45,7 @@ classifierNames = ["MNB",
                    "Voting"]
 
 ##to define the style. 0 => Normal style. Load documents, train, and save classifier. 1 => Module style. Load vote classifier 
-style = 0
+style = 1
 ##to define the mode of select word. 0 => use word types. 1 => no word types
 # selectingWordsMode = 0
 ##to define whether the vocabulary need to be created. 0 => no. 1 => yes
@@ -131,6 +135,10 @@ def buildClassifierFeature(words):
     for v in vocabulary:
         feature.append(v in words)
     
+    #feature = {}
+    #for v in vocabulary:
+    #    feature[v] = (v in words)
+
     return feature
 
 def buildTargetedClassifierFeatures(targetedData):
@@ -248,7 +256,7 @@ def main():
         random.shuffle(dataset)
 
         # # to get the part of dataset
-        dataset = dataset[:100]
+        #dataset = dataset[:100]
 
         global vocabulary
 
@@ -306,7 +314,7 @@ def main():
         gc.collect()
         
 ##      to use the naive bayes classifier to train. [ [{}, ''] , ....]
-##        classifiers.append(nltk.NaiveBayesClassifier.train(trainingTargetedClassifierFeatures))
+        # classifiers.append(nltk.NaiveBayesClassifier.train(trainingTargetedClassifierFeatures))
 ##        classifiers.append(
 
 ##    to try other classifier
@@ -404,8 +412,8 @@ def main():
             # print("Classification: ", voteClassifier.classify(test[0]), " Confidence: ", voteClassifier.confidence(test[0]), 'in real: ', test[1])
 
         # to save the classifier as pickle except vote classifier
-        temp = classifierNumber - 1
-        for i in range(temp):
+        # temp = classifierNumber - 1
+        for i in range(classifierNumber):
             save(classifiers[i], classifierNames[i])
         
         # # to add good test data into training data
@@ -461,6 +469,26 @@ def main():
                                         classifiers[2])
         classifiers.append(voteClassifier)
         print('loading classifiers ends')
+
+        #reviews, hashtable = twittertrend.trend(number = 5, lag = 0)
+        
+        #for review in reviews:
+        #  print(review)
+
+        #result = stream.parsetw(track = 'Trump', number = 2)
+        
+        #for r in result:
+        #  print(r)
+        #print('parsing old tweets from twitter start')
+        
+        #texts, tweets = search.twittersearch(q = ['War'], count = 10)
+        
+        #print('parsing old tweets from twitter end')
+
+        #print('output texts')
+        #for text in texts:
+        #  print('text: ' + text)
+        
 
         # print('predicting start')
 
