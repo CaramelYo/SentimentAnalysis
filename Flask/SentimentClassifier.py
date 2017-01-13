@@ -1,3 +1,6 @@
+# for python 3 to python 2
+from __future__ import print_function
+
 import nltk
 import random
 import pickle
@@ -38,7 +41,7 @@ classifierNames = ["MNB",
                    "Voting"]
 
 ##to define the style. 0 => Normal style. Load documents, train, and save classifier. 1 => Module style. Load vote classifier 
-style = 1
+style = 0
 ##to define the mode of select word. 0 => use word types. 1 => no word types
 # selectingWordsMode = 0
 ##to define whether the vocabulary need to be created. 0 => no. 1 => yes
@@ -245,7 +248,9 @@ def main():
         random.shuffle(dataset)
 
         # # to get the part of dataset
-        # dataset = dataset[:1000]
+        dataset = dataset[:100]
+
+        global vocabulary
 
         # to filter data
         print('filtering data start')
@@ -371,7 +376,7 @@ def main():
         # last call
         end += tempSize
         for i in range(classifierNumber):
-            classifiers[i].partial_fit(trainingClassifierFeatures[start: end], trainingTargets[start: end])
+            classifiers[i].partial_fit(trainingClassifierFeatures[start: end], trainingTargets[start: end], classes = allTargets)
 
         # to use our vote classifier
         # can use function like 'add' to add classifier?
@@ -442,7 +447,7 @@ def main():
         # print('loading test classifier features and test targets end')
 
         print('loading vocabulary starts')
-        global vocabulary
+        # global vocabulary
         vocabulary = load('Vocabulary')
         print('loading vocabulary ends')
 
