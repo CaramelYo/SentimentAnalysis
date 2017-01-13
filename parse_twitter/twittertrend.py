@@ -14,7 +14,7 @@ except ImportError:
 
 # Import the necessary methods from "twitter" library
 from twitter import Twitter, OAuth
-import searchtwitter as search
+import twittersearch as search
 import time
 
 
@@ -57,22 +57,22 @@ def trend(number,lag):
             print('name'+ str(i) + 'has hashtag:' + y.split('#')[1])
             hashtable.append(y.split('#')[1])
     
-    b = 'twitter_Top_10_trend_'
-    c = '.'
-    d = 'txt'
+    #b = 'twitter_Top_10_trend_'
+    #c = '.'
+    #d = 'txt'
     result = []
-
+    
     start = time.time()
     
     for i in range(0, 10, 1):
-        x = search.twittersearch(q = hashtable[i], count = number)
+        x, y = search.twittersearch(q = hashtable[i], count = number)
         result.append(x)
         print(i)
         time.sleep(lag)
-        a = str(i)
-        f = b + a + c + d
-        with open(f, 'w') as outfile:
-            json.dump(x, outfile)  
+        #a = str(i)
+        #f = b + a + c + d
+        #with open(f, 'w') as outfile:
+            #json.dump(x, outfile)  
         
     end= time.time()
     
@@ -80,7 +80,7 @@ def trend(number,lag):
 
     print("Trend Time taken:", elapsed, "seconds.")
     
-    time.sleep(lag)
+    #time.sleep(lag)
     
     return result, hashtable
     
