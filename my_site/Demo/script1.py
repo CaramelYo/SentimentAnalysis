@@ -199,4 +199,5 @@ def contact():
     return render_template("contact.html")
 
 if __name__=="__main__":
-    app.run(debug=True)
+    app.run(port=8454, host='140.116.177.150', debug=True)
+    ##app.run(port=8454, debug=True)
