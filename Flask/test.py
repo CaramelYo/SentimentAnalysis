@@ -25,6 +25,8 @@ import twitterstream as stream
 ##global info
 vocabulary = []
 classifiers = []
+discourse = []
+punctuation = ['.', ',', '--']
 stopWords = stopwords.words('english')
 wordTypes = ['JJ', 'JJR', 'JJS', 'NN', 'NNS', 'RB', 'RBS', 'UH', 'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ']
 trainingRatio = 0.9
@@ -75,6 +77,24 @@ def loadData():
 
     print('loading is  completed')
     return dataset
+
+def loadShortReviews():
+    print('loading short reviews starts')
+
+    with open('Data/PositiveReviews.txt') as f:
+        dataset = [word_tokenize([line), 'pos']
+                  for line in f]
+    
+    print('loading short reviews ends')
+    return dataset
+
+def loadDiscourse():
+    discourse = []
+    with open('Vocabulary for Sentiment Analysis/discourse_connectors.txt') as f:
+        for line in f:
+            discourse.append(word_tokenize(line))
+
+    return discourse
 
 def wordsFilter(data):
 ##  getting the "if selectingWordsMode" out could improve the performance
@@ -267,6 +287,56 @@ def main():
     warnings.filterwarnings("ignore")
 
     if style == 0:
+        print('loading discourse starts')
+
+        global discourse
+        global punctuation
+        discourse = loadDiscourse()
+
+        print('loading discourse ends')
+
+        dataset = loadShortReviews()
+
+        #print('show original reviews')
+        #print(dataset[228][0])
+        #print('show after word_tokenize')
+        #print(word_tokenize(dataset[228][0]))
+
+        isDiscourse = false
+
+        for data in dataset:
+            length = len(data[0])
+            for i in range(length):
+                if(isDiscourse):
+                else:
+                    for d in discourse:
+                        if(data[0][i] in d[0]):
+                            dLength = len(d)
+                            isDiscourse = true
+                            for j in range(1, dLength):
+                                if(!data[0][i + j] || data[0][i + j] != d[j]):
+                                    isDiscourse = false
+                                    break
+
+                    #YO
+
+
+
+            for words in data[0]:
+                length = len(words)
+                for i in range(length):
+                    if(isDiscourse && words[i] in punctuation):
+                        isDiscourse = false
+                        end = i
+                        
+
+                    for d in discourse:
+                        if(words[i] in d[0]):
+                            start = i
+                            isDiscourse = true
+                            break;
+
+
         print('loading features and targets starts')
 
         trainingClassifierFeatures = load('TrainingClassifierFeatures')
