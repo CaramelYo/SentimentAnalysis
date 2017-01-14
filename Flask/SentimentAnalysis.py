@@ -18,9 +18,9 @@ from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.svm import SVC, LinearSVC, NuSVC
 from sklearn.decomposition import LatentDirichletAllocation as LDA
 
-#import twittersearch as search
-#import twittertrend
-#import twitterstream as stream
+import twittersearch as search
+import twittertrend
+import twitterstream as stream
 
 ##global info
 vocabulary = []
@@ -45,19 +45,34 @@ classifierNames = ["MNB",
                    "Voting"]
 
 ##to define the style. 0 => Normal style. Load documents, train, and save classifier. 1 => Module style. Load vote classifier 
-style = 1
+style = 0
 ##to define the mode of select word. 0 => use word types. 1 => no word types
 # selectingWordsMode = 0
 ##to define whether the vocabulary need to be created. 0 => no. 1 => yes
 isSetVocabulary = 1
+#movie reviews or short reviews
+isMovieReviews = 0
 
 def loadData():
     print('loading the dataset')
     
-    dataset = [[word_tokenize(movie_reviews.raw(fileid)), category]
-                 for category in movie_reviews.categories()
-                 for fileid in movie_reviews.fileids(category)]
-    
+    if(isMovieReviews == 1):
+        dataset = [[word_tokenize(movie_reviews.raw(fileid)), category]
+                  for category in movie_reviews.categories()
+                  for fileid in movie_reviews.fileids(category)]
+    elif(isMovieReviews == 0):
+        with open('Data/PositiveReviews.txt') as f:
+            lines = f.readlines()
+
+        dataset = [[word_tokenize(line), 'pos']
+                  for line in lines]
+
+        with open('Data/NegativeReviews.txt') as f:
+            lines = f.readlines()
+
+        dataset.extend([[word_tokenize(line), 'neg']
+                        for line in lines])
+
     print('loading is  completed')
     return dataset
 
@@ -252,6 +267,7 @@ def main():
     warnings.filterwarnings("ignore")
 
     if style == 0:
+        '''
         dataset = loadData()
         random.shuffle(dataset)
 
@@ -303,6 +319,29 @@ def main():
         save(trainingClassifierFeatures, 'TrainingClassifierFeatures')
         save(trainingTargets, 'TrainingTargets')
         print('saving training classifier features and training targets end')
+        
+        print('test targeted classifier features start')
+        testClassifierFeatures, testTargets = buildTargetedClassifierFeatures(testData)
+        print('test targeted classifier features are completed')
+
+        print('saving test classifier features and test targets start')
+        save(testClassifierFeatures, 'TestClassifierFeatures')
+        save(testTargets, 'TestTargets')
+        print('saving test classifier features and test targets end')
+        '''
+
+        print('loading features and targets starts')
+
+        trainingClassifierFeatures = load('TrainingClassifierFeatures')
+        trainingTargets = load('TrainingTargets')
+
+        testClassifierFeatures = load('TestClassifierFeatures')
+        testTargets = load('TestTargets')
+
+        trainingDataSize = len(trainingTargets)
+        testDataSize = len(testTargets)
+
+        print('loading features and targets ends')
 
         # # to get data from pickle
         # trainingClassifierFeatures = load('TrainingClassifierFeatures')
@@ -333,16 +372,16 @@ def main():
 ##        classifiers.append(SklearnClassifier(SGDClassifier()))
         classifiers.append(SGDClassifier())
 
-##    SVC abort
-##        classifiers.append(SklearnClassifier(SVC()))
+##    SVC no partial_fit
+        #classifiers.append(SVC())
 
-##    LinearSVC
+##    LinearSVC no partial_fit
 ##        classifiers.append(SklearnClassifier(LinearSVC()))
-        # classifiers.append(LinearSVC())
+        #classifiers.append(LinearSVC())
 
-##    NuSVC
+##    NuSVC no partial_fit
 ##        classifiers.append(SklearnClassifier(NuSVC()))
-        # classifiers.append(NuSVC())
+        #classifiers.append(NuSVC())
 
         print('classifiers creating end')
 
@@ -393,16 +432,7 @@ def main():
                                         classifiers[2])
         classifiers.append(voteClassifier)
 
-        print('classifiers partial training start')
-
-        print('test targeted classifier features start')
-        testClassifierFeatures, testTargets = buildTargetedClassifierFeatures(testData)
-        print('test targeted classifier features are completed')
-
-        print('saving test classifier features and test targets start')
-        save(testClassifierFeatures, 'TestClassifierFeatures')
-        save(testTargets, 'TestTargets')
-        print('saving test classifier features and test targets end')
+        print('classifiers partial training ends')
         
         # to predict
         print('predicting start')
@@ -469,26 +499,36 @@ def main():
                                         classifiers[2])
         classifiers.append(voteClassifier)
         print('loading classifiers ends')
+        
+        print('twitter tren strarts')
 
-        #reviews, hashtable = twittertrend.trend(number = 5, lag = 0)
-        
-        #for review in reviews:
-        #  print(review)
+        reviews, hashtable = twittertrend.trend(number = 5, lag = 0)
 
-        #result = stream.parsetw(track = 'Trump', number = 2)
-        
-        #for r in result:
-        #  print(r)
-        #print('parsing old tweets from twitter start')
-        
-        #texts, tweets = search.twittersearch(q = ['War'], count = 10)
-        
-        #print('parsing old tweets from twitter end')
+        # reviews is [[]]
+        for review in reviews:
+          print(review)
 
-        #print('output texts')
-        #for text in texts:
-        #  print('text: ' + text)
+        print('twitter trend ends')
+
+        print('twitter parsetw starts')
         
+        result = stream.parsetw(track = 'Trump', number = 2)
+        
+        # result is [[[]]]
+        for r in result[0]:
+          print(r)
+
+        print('twitter parsetw ends')
+
+        print('twitter search starts')
+        
+        texts, tweets = search.twittersearch(q = ['War'], count = 10)
+        
+        # texts is []
+        for text in texts:
+          print('text: ' + text)
+        
+        print('twitter search ends')
 
         # print('predicting start')
 

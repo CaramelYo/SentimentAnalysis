@@ -74,8 +74,9 @@ def parsetw(track, number):
     text = []
     for i in range(0, len(twittertext), 1):
         x = twittertext[i]
-        y = ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)"," ",x).split())
-        text.append(y)
+        y = re.sub("\\\\n","",x)
+        z = ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)"," ",y).split())
+        text.append(z)
     
     return text, hashtags
     
