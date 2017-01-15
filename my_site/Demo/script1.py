@@ -17,10 +17,24 @@ def about():
     from bokeh.plotting import figure, output_file, show, curdoc
     from bokeh.models.widgets import TextInput
 
-    x = [x*0.005 for x in range(0, 200)]
-    y = x
+    #for twitter parsing
+    import tweepysearch as search
 
-    source = ColumnDataSource(data=dict(x=x, y=y))
+    #for sentiment analysis
+    import SentimentAnalysis as sa
+
+    #to parse old data from twitter
+    texts, tweets = search.twittersearch(q = ['Trump'], number = 10)
+
+    #to do sentiment analysis and to return the result as dictionary
+    result = sa.predict(texts)
+
+    #x = [x*0.005 for x in range(0, 200)]
+    #y = x
+
+    #source = ColumnDataSource(data=dict(x=x, y=y))
+    
+    source = ColumnDataSource(data=result)
 
     plot = figure(plot_width=400, plot_height=400)
     plot.line('x', 'y', source=source, line_width=3, line_alpha=0.6)
@@ -237,7 +251,7 @@ def graph():
             print(key, value)
 
         words = pd.DataFrame.from_dict(count_all.most_common(20), orient='columns', dtype = None, data=dict(x="Key Words", y="Words Count"))
-        source = ColumnDataSource(data=dict(x=Key Words, y=Words Count))
+        source = ColumnDataSource(data=dict(x='Key Words', y='Words Count'))
         words.columns = ['Key Words', 'Words Count']
 
         a = 'Words Distribution of '
@@ -291,4 +305,4 @@ def contact():
     return render_template("contact.html")
 
 if __name__=="__main__":
-    app.run(debug=True)
+    app.run(port = 5000, host = '140.116.177.150', debug=True)
