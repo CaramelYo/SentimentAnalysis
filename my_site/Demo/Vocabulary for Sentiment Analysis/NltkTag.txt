@@ -1,0 +1,45 @@
+NNS         noun, common, plural	複數名詞	O
+RBS         adverb, superlative	最高級副詞	O
+TO         "to" as preposition or infinitive marker	"to" 介系詞/不定詞
+UH         interjection	感嘆詞	O
+JJS         adjective, superlative	最高級形容詞	O
+PRP$         pronoun, possessive	所有格代名詞 (ex: her his mine my our ours their thy your)
+NNPS         noun, proper, plural	複數專有名詞
+VBP         verb, present tense, not 3rd person singular	現在式動詞(非三單)	O
+JJ         adjective or numeral, ordinal	形容詞/數詞	O
+VBN         verb, past participle	動詞之過去分詞	O
+NNP         noun, proper, singular	單數專有名詞
+LS         list item marker	表條列詞(ex: A.... 1....)
+DT         determiner	限定詞(冠詞 數詞 量詞 代名形容詞 用來限定名詞)
+.         sentence terminator	句點
+FW         foreign word	外國詞彙
+NN         noun, common, singular or mass	常見名詞(單複數皆可?)	O
+RBR         adverb, comparative	比較級副詞	O
+--         dash	就是dash
+IN         preposition or conjunction, subordinating 介係詞/連接詞/從屬子句
+WP         WH-pronoun wh的代名詞(ex: that what whatever whatsoever which who whom whosoever)
+:         colon or ellipsis	冒號或是省略
+)         closing parenthesis	右括弧
+CD         numeral, cardinal	數詞基數
+WDT         WH-determiner	wh的限定詞(ex: that what whatever which whichever)
+PRP         pronoun, personal	人稱代名詞
+$         dollar	就是$
+SYM         symbol	符號
+WRB         Wh-adverb	WH副詞(ex: how however whence whenever where whereby whereever wherein whereof why)
+WP$         WH-pronoun, possessive	wh代名詞所有格
+MD         modal auxiliary	典型助動詞
+VBZ         verb, present tense, 3rd person singular	現在式動詞(三單) O
+(         opening parenthesis	左括弧
+RB         adverb	副詞	O
+CC         conjunction, coordinating	連接詞/對等子句	(ex: vs)
+RP         particle	介副詞(質詞) (ex: give "up" 等)
+JJR         adjective, comparative	比較級形容詞	O
+PDT         pre-determiner	前限定詞(?) (ex: all both half many quite such sure this)
+``         opening quotation mark	前引號
+POS         genitive marker	屬格(ex: ' 's)
+VBD         verb, past tense	過去式動詞	O
+,         comma	逗號
+VBG         verb, present participle or gerund	動詞之現在分詞/動名詞	O
+VB         verb, base form	原形動詞	O
+EX         existential there	就是there(表存在)
+''         closing quotation mark	後引號
