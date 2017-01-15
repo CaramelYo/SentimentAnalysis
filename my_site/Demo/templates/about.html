@@ -2,6 +2,12 @@
 <!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->
 <!--[if !IE]><!--> <html lang="en"> <!--<![endif]-->
 <head>
+	<link rel="stylesheet" href="//cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.css" type="text/css" />
+	<link rel="stylesheet" href="//cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.0.min.css" type="text/css" />
+	<script src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.0.min.js"></script>
+ <script type="text/javascript" src={{cdn_js | safe}}></script>
+ <link rel="stylesheet" href={{cdn_css2 | safe}} type="text/css" />
+ <script type="text/javascript" src={{cdn_js2 | safe}}></script>
 	<title>SentiLab NCKU</title>
 
 	<!-- Meta -->
@@ -109,44 +115,9 @@
 
 		<!-- About -->
 				<!-- about section -->
-		<section id="about">
-			<div class="container g-pt-100 g-pb-30">
-				<div class="row">
-					<div class="col-sm-8 col-sm-offset-2">
-						<div class="g-heading-v9 text-center g-mb-30">
-							<h2 class="text-uppercase"><strong>Meet our Members</strong></h2>
-						</div>
-						<p class="g-fs-16 text-center g-mb-70">The authors of this website.</p>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-xs-4 col-3xs-12 lawyer-post g-mb-50">
-						<img class="img-responsive full-width g-mb-25" src="static/img-temp/blog/flickr.com__photos__ter-burg__9216004446__sizes__k.jpg" alt="">
-						<p class="g-fs-10 g-theme-text-color-1"><strong>Graduate Institute of Finance</strong></p>
-						<h5 class="text-uppercase"><strong>Robert Chuang</strong></h5>
-						<p class="g-fs-10 text-uppercase">Twitter data parsing</p>
-						<p>Sed feugiat porttitor nunc, non dignissim ipsum  vestibulum in. Donec in blandit dolor. Vivamus a fringilla lorem, vel.</p>
-						<p class="g-mt-30"><a class="btn-u btn-u-lg btn-u-red btn-u-upper" href="#">Read more</a></p>
-					</div>
-					<div class="col-xs-4 col-3xs-12 lawyer-post g-mb-50">
-						<img class="img-responsive full-width g-mb-25" src="static/img-temp/blog/isorepublic.com___helical-walkway.jpg" alt="">
-						<p class="g-fs-10 g-theme-text-color-1"><strong>Department of Computer Science and Information Engineering</strong></p>
-						<h5 class="text-uppercase"><strong>蔡侑軒</strong></h5>
-						<p class="g-fs-10 text-uppercase">Python</p>
-						<p>Fusce vel aliquet arcu. Aenean malesuada a sem sed facilisis. Maecenas aliquam faucibus metus, nec auctor est.</p>
-						<p class="g-mt-30"><a class="btn-u btn-u-lg btn-u-red btn-u-upper" href="#">Read more</a></p>
-					</div>
-					<div class="col-xs-4 col-3xs-12 lawyer-post g-mb-50">
-						<img class="img-responsive full-width g-mb-25" src="static/img-temp/blog/tkLOe7nnQ7mnMsiuijBy_hm.jpg" alt="">
-						<p class="g-fs-10 g-theme-text-color-1"><strong>Department of Psychology</strong></p>
-						<h5 class="text-uppercase"><strong>Patricia Chuang</strong></h5>
-						<p class="g-fs-10 text-uppercase">Website</p>
-						<p>Fusce vel aliquet arcu. Aenean malesuada a sem sed facilisis. Maecenas aliquam faucibus metus, nec auctor est.</p>
-						<p class="g-mt-30"><a class="btn-u btn-u-lg btn-u-red btn-u-upper" href="#">Read more</a></p>
-					</div>
-				</div>
-			</div>
-		</section>
+				{{script1 | safe}}
+				{{div3 | safe}}
+
 		<!-- End About -->
 
 	</main>
@@ -169,9 +140,6 @@
 	<script src="../static/plugins/sky-forms-pro/skyforms/js/jquery.validate.min.js"></script>
 	<script src="../static/plugins/cube-portfolio/cubeportfolio/js/jquery.cubeportfolio.min.js"></script>
 	<script src="../static/plugins/modernizr.js"></script>
-
-	<!-- Google Map -->
-	<script src="https://maps.googleapis.com/maps/api/js?signed_in=true&amp;callback=initMap" async defer></script><script src="static/js/plugins/gmaps-ini.js"></script>
 
 	<!-- JS Page Level-->
 	<script src="../static/js/one.app.js"></script>

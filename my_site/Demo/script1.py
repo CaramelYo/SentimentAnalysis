@@ -1,6 +1,5 @@
 import json
 from flask import Flask,request,render_template
-import MySQLdb as mysql
 
 app=Flask(__name__)
 
@@ -10,12 +9,61 @@ def home():
 
 @app.route('/about')
 def about():
-    return render_template("about.html")
+    from bokeh.layouts import WidgetBox
+    from bokeh.embed import components
+    from bokeh.resources import CDN
+    from bokeh.io import vform
+    from bokeh.models import CustomJS, ColumnDataSource, Slider
+    from bokeh.plotting import figure, output_file, show, curdoc
+    from bokeh.models.widgets import TextInput
+
+    x = [x*0.005 for x in range(0, 200)]
+    y = x
+
+    source = ColumnDataSource(data=dict(x=x, y=y))
+
+    plot = figure(plot_width=400, plot_height=400)
+    plot.line('x', 'y', source=source, line_width=3, line_alpha=0.6)
+
+    callback = CustomJS(args=dict(source=source), code="""
+            var data = source.get('data');
+            var f = cb_obj.get('value')
+            console.log(f)
+            x = data['x']
+            y = data['y']
+            for (i = 0; i < x.length; i++) {
+                y[i] = Math.pow(x[i], f)
+            }
+            source.trigger('change');
+        """)
+
+    #slider = Slider(start=0.1, end=4, value=1, step=.1, title="power", callback=callback)
+    #layout = vform(slider, plot)
+
+    text_input = TextInput(value="1", title="power", callback=callback)
+    layout = vform(text_input, plot)
+
+
+    script1 ,div3, = components(layout)
+    cdn_js=CDN.js_files[0]
+    cdn_css=CDN.css_files[0]
+    cdn_js2=CDN.js_files[1]
+    cdn_css2=CDN.css_files[1]
+    return render_template("about.html",
+    script1=script1,
+    div3=div3,
+    cdn_js=cdn_js,
+    cdn_css=cdn_css,
+    cdn_js2=cdn_js2,
+    cdn_css2=cdn_css2,)
+
 
 @app.route('/sentianalysis')
 def sentianalysis():
     import numpy as np
-
+    from bokeh.io import vform
+    from bokeh.models import CustomJS, ColumnDataSource, Slider
+    from bokeh.models.widgets import TextInput
     from bokeh.layouts import gridplot
     from bokeh.plotting import figure, show, output_file
     from bokeh.sampledata.stocks import AAPL, GOOG, IBM, MSFT
@@ -24,7 +72,6 @@ def sentianalysis():
 
     def datetime(x):
         return np.array(x, dtype=np.datetime64)
-
 
     # graph 1
     p1 = figure(x_axis_type="datetime", title="Stock Closing Prices")
@@ -37,6 +84,7 @@ def sentianalysis():
     p1.line(datetime(IBM['date']), IBM['adj_close'], color='#33A02C', legend='IBM')
     p1.line(datetime(MSFT['date']), MSFT['adj_close'], color='#FB9A99', legend='MSFT')
     p1.legend.location = "top_left"
+
 
 
     # graph 2
@@ -128,6 +176,11 @@ def graph():
     from bokeh.charts import output_file, show, Bar
     from bokeh.embed import components
     from bokeh.resources import CDN
+    from bokeh.layouts import WidgetBox
+    from bokeh.io import vform
+    from bokeh.models import CustomJS, ColumnDataSource, Slider
+    from bokeh.plotting import figure, output_file, show, curdoc
+    from bokeh.models.widgets import TextInput
 
     emoticons_str = r"""
         (?:
@@ -161,34 +214,73 @@ def graph():
             tokens = [token if emoticon_re.search(token) else token.lower() for token in tokens]
         return tokens
 
-    tweets, test = search.twittersearch(q = 'DowJones' , count = 10000)
+    def plotchart(q):
+        text, time, tweets = search.twittersearch(q = q , count = 100)
 
-    punctuation = list(string.punctuation)
-    stop = stopwords.words('english') + punctuation + ['RT', 's', 'u2026', 'The', 'amp', 'By', 'points','K']
+        punctuation = list(string.punctuation)
+        stop = stopwords.words('english') + punctuation + ['RT', 's', 'u2026', 'The', 'amp', 'By', 'points',
+        'K', 'You', 'I', 'said', 'https', 'u2019s', '8', 'one', 'want','via', 'This', 'As', 'says', 'would', 'next',
+        'why', 'u2019', 'u2605', 'A', 'htt', 'ud83d', 'like', '1', 'u2013']
 
-    count_all = Counter()
-    for i in range(0,len(tweets),1):
+        count_all = Counter()
+        for i in range(0,len(text),1):
 
-        #terms_all = [term for term in preprocess(tweets[i])]
-        terms_stop = [term for term in preprocess(tweets[i]) if term not in stop]
-        # Update the counter
-        count_all.update(terms_stop)
+            #terms_all = [term for term in preprocess(tweets[i])]
+            terms_stop = [term for term in preprocess(text[i]) if term not in stop]
+            # Update the counter
+            count_all.update(terms_stop)
+            # Print the first 5 most frequent words
+            #print(count_all.most_common(20))
 
-    for key, value in count_all.most_common(20) :
-        words= pd.DataFrame.from_dict(count_all.most_common(20), orient='columns', dtype = None)
+
+        for key, value in count_all.most_common(20) :
+            print(key, value)
+
+        words = pd.DataFrame.from_dict(count_all.most_common(20), orient='columns', dtype = None, data=dict(x="Key Words", y="Words Count"))
+        source = ColumnDataSource(data=dict(x=Key Words, y=Words Count))
         words.columns = ['Key Words', 'Words Count']
 
-    bar = Bar(words, 'Key Words',values='Words Count',
-                     title="HP Distribution by Cylinder Count", legend='top_right', bar_width=1)
+        a = 'Words Distribution of '
+        title = a + q
 
-    script1, div1, = components(bar)
+        bar = Figure(plot_width=400, plot_height=400)
+        bar.Bar(source, 'Key Words',values='Words Count',
+                  title = title, legend='top_right', bar_width=0.5)
+
+
+    callback = CustomJS(args=dict(source=source), code="""
+        var data = source.get('data');
+        var f = cb_obj.get('value')
+        console.log(f)
+        x = data['x']
+        y = data['y']
+        for (i = 0; i < x.length; i++) {
+            y[i] = Math.pow(x[i], f)
+        }
+        source.trigger('change');
+    """)
+
+        #print(words)
+
+    #slider = Slider(start=0.1, end=4, value=1, step=.1, title="power", callback=callback)
+    #layout = vform(slider, plot)
+
+    text_input = TextInput(value="", title="power", callback=callback)
+    layout = vform(text_input, bar)
+
+
+    script1 ,div5, = components(layout)
     cdn_js=CDN.js_files[0]
     cdn_css=CDN.css_files[0]
+    cdn_js2=CDN.js_files[1]
+    cdn_css2=CDN.css_files[1]
     return render_template("graph.html",
     script1=script1,
-    div1=div1,
+    div5=div5,
     cdn_js=cdn_js,
-    cdn_css=cdn_css)
+    cdn_css=cdn_css,
+    cdn_js2=cdn_js2,
+    cdn_css2=cdn_css2)
 
 @app.route('/references')
 def references():
@@ -199,5 +291,4 @@ def contact():
     return render_template("contact.html")
 
 if __name__=="__main__":
-    app.run(port=8454, host='140.116.177.150', debug=True)
-    ##app.run(port=8454, debug=True)
+    app.run(debug=True)
