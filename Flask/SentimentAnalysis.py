@@ -18,8 +18,9 @@ from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.svm import SVC, LinearSVC, NuSVC
 from sklearn.decomposition import LatentDirichletAllocation as LDA
 
-import twittersearch as search
+#import twittersearch as search
 import twittertrend
+import tweepysearch as search
 import twitterstream as stream
 
 ##global info
@@ -45,7 +46,7 @@ classifierNames = ["MNB",
                    "Voting"]
 
 ##to define the style. 0 => Normal style. Load documents, train, and save classifier. 1 => Module style. Load vote classifier 
-style = 0
+style = 1
 ##to define the mode of select word. 0 => use word types. 1 => no word types
 # selectingWordsMode = 0
 ##to define whether the vocabulary need to be created. 0 => no. 1 => yes
@@ -101,7 +102,7 @@ def wordsFilter(data):
     # data[0] = newWords
     # del newWords
 
-def wordsFilterIntext(words):
+def wordsFilterInText(words):
 ##  getting the "if selectingWordsMode" out could improve the performance
     newWords = []
 
@@ -239,11 +240,34 @@ class VoteClassifier(ClassifierI):
 
         return predictions
 
-def predict(text):
+def predict(texts):
+    features = []
+
+    for text in texts:
+        words = wordsFilterInText(word_tokenize(text))
+        features.append(buildClassifierFeature(words))
+
+    temp = len(classifiers) - 1
+    for i in range(temp):
+        print(classifierNames[i] + ' predict ')
+        print(classifiers[i].predict(features))
+
+    r = classifiers[i].predict(features)
+    print(classifierNames[temp] + ' predict ')
+    print(r)
+
+    dic = {}
+    dic['pos'] = np.count_nonzero(r == 'pos')
+    dic['neg'] = np.count_nonzero(r =='neg')
+
+    print(dic)
+    return dic
+
+def predictOnHtml(text):
     print('text preprocessing starts')
     print('filtering words starts')
     words = word_tokenize(text)
-    words = wordsFilterIntext(words)
+    words = wordsFilterInText(words)
     print('filtering words ends')
 
     print('extracting feature starts')
@@ -265,6 +289,8 @@ def predict(text):
 def main():
 ##  to disable the warnings
     warnings.filterwarnings("ignore")
+    global vocabulary
+
 
     if style == 0:
         '''
@@ -273,8 +299,6 @@ def main():
 
         # # to get the part of dataset
         #dataset = dataset[:100]
-
-        global vocabulary
 
         # to filter data
         print('filtering data start')
@@ -483,13 +507,15 @@ def main():
         # testClassifierFeatures = load('TestClassifierFeatures')
         # testTargets = load('TestTargets')
         # print('loading test classifier features and test targets end')
-
+        
         print('loading vocabulary starts')
-        # global vocabulary
+        
         vocabulary = load('Vocabulary')
+        
         print('loading vocabulary ends')
 
         print('loading classifiers starts')
+        
         temp = len(classifierNames) - 1
         for i in range(temp):
             classifiers.append(load(classifierNames[i]))
@@ -499,7 +525,8 @@ def main():
                                         classifiers[2])
         classifiers.append(voteClassifier)
         print('loading classifiers ends')
-        
+
+        '''
         print('twitter tren strarts')
 
         reviews, hashtable = twittertrend.trend(number = 5, lag = 0)
@@ -519,20 +546,25 @@ def main():
           print(r)
 
         print('twitter parsetw ends')
+        '''
 
-        print('twitter search starts')
+        #print('twitter search starts')
         
-        texts, tweets = search.twittersearch(q = ['War'], count = 10)
+        #texts, tweets = search.twittersearch(q = ['RUSSIA', 'USA'], number = 10)
         
         # texts is []
-        for text in texts:
-          print('text: ' + text)
+        #for text in texts:
+        #    print('text: ' + text)
+        #    print(predict(text))
         
-        print('twitter search ends')
+        #predict(texts)
 
-        # print('predicting start')
+        #print('twitter search ends')
+
+        #length = len(texts)
+        #for i in range(length):
+        #    texts[i] = wordsFilterInText(word_tokenize(texts[i]))
 
         # for i in range(len(classifiers)):
         #     print(classifierNames[i], 'Algo accuracy percent: ', (accuracy(classifiers[i], testClassifierFeatures, testTargets)) * 100)
-        
 main()

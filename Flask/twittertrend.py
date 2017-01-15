@@ -14,7 +14,8 @@ except ImportError:
 
 # Import the necessary methods from "twitter" library
 from twitter import Twitter, OAuth
-import twittersearch as search
+#import twittersearch as search
+import tweepysearch as search
 import time
 
 
