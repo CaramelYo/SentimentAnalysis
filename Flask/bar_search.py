@@ -13,6 +13,9 @@ from nltk.corpus import stopwords
 import string
 from bokeh.charts import output_file, show, Bar
 
+output_file("bar_search.html")
+
+
 emoticons_str = r"""
     (?:
         [:=;] # Eyes
@@ -67,7 +70,7 @@ def plotchart(q):
 
 
     for key, value in count_all.most_common(20) :
-        print key, value
+        print(key, value)
 
     words = pd.DataFrame.from_dict(count_all.most_common(20), orient='columns', dtype = None)
     words.columns = ['Key Words', 'Words Count']
@@ -80,7 +83,7 @@ def plotchart(q):
     bar = Bar(words, 'Key Words',values='Words Count', 
               title = title, legend='top_right', bar_width=0.5)
 
-    output_file("bar_search.html", title="bar_search.py example")
+    
 
     show(bar)
 
