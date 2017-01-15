@@ -17,10 +17,24 @@ def about():
     from bokeh.plotting import figure, output_file, show, curdoc
     from bokeh.models.widgets import TextInput
 
-    x = [x*0.005 for x in range(0, 200)]
-    y = x
+    #for twitter parsing
+    import tweepysearch as search
 
-    source = ColumnDataSource(data=dict(x=x, y=y))
+    #for sentiment analysis
+    import SentimentAnalysis as sa
+
+    #to parse old data from twitter
+    texts, tweets = search.twittersearch(q = ['Trump'], number = 10)
+
+    #to do sentiment analysis and to return the result as dictionary
+    result = sa.predict(texts)
+
+    #x = [x*0.005 for x in range(0, 200)]
+    #y = x
+
+    #source = ColumnDataSource(data=dict(x=x, y=y))
+    
+    source = ColumnDataSource(data=result)
 
     plot = figure(plot_width=400, plot_height=400)
     plot.line('x', 'y', source=source, line_width=3, line_alpha=0.6)
@@ -170,7 +184,6 @@ def graph():
     import re
     import pandas as pd
     from collections import Counter
-    import searchtwitter as search
     from nltk.corpus import stopwords
     import string
     from bokeh.charts import output_file, show, Bar
@@ -181,6 +194,11 @@ def graph():
     from bokeh.models import CustomJS, ColumnDataSource, Slider
     from bokeh.plotting import figure, output_file, show, curdoc
     from bokeh.models.widgets import TextInput
+
+    #for twitter parsing
+    import tweepysearch as search
+    #for sentiment analysis
+    import SentimentAnalysis as sa
 
     emoticons_str = r"""
         (?:
@@ -215,7 +233,8 @@ def graph():
         return tokens
 
     def plotchart(q):
-        text, time, tweets = search.twittersearch(q = q , count = 100)
+        
+        text, time = search.twittersearch(q = q , number = 10)
 
         punctuation = list(string.punctuation)
         stop = stopwords.words('english') + punctuation + ['RT', 's', 'u2026', 'The', 'amp', 'By', 'points',
@@ -237,50 +256,68 @@ def graph():
             print(key, value)
 
         words = pd.DataFrame.from_dict(count_all.most_common(20), orient='columns', dtype = None, data=dict(x="Key Words", y="Words Count"))
-        source = ColumnDataSource(data=dict(x=Key Words, y=Words Count))
+        source = ColumnDataSource(data=dict(x='Key Words', y='Words Count'))
         words.columns = ['Key Words', 'Words Count']
+        
+        '''
+        texts, time = search.twittersearch(q = q, number = 10)
+        result = sa.predict(texts)
+
+        labelX = 'Sentiment'
+        labelY = 'Count'
+
+        resultList = []
+
+        for key in result.keys():
+            resultList.append((key, result[key]))
+
+        words = pd.DataFrame.from_dict(data = result)
+        source = ColumnDataSource(data=dict(x=labelX, y=labelY))
+        words.columns = [labelX, labelY]
+        '''
 
         a = 'Words Distribution of '
         title = a + q
 
         bar = Figure(plot_width=400, plot_height=400)
-        bar.Bar(source, 'Key Words',values='Words Count',
+        bar.Bar(source, labelX,values=labelY,
                   title = title, legend='top_right', bar_width=0.5)
 
-
-    callback = CustomJS(args=dict(source=source), code="""
-        var data = source.get('data');
-        var f = cb_obj.get('value')
-        console.log(f)
-        x = data['x']
-        y = data['y']
-        for (i = 0; i < x.length; i++) {
-            y[i] = Math.pow(x[i], f)
-        }
-        source.trigger('change');
-    """)
+        callback = CustomJS(args=dict(source=source), code="""
+            var data = source.get('data');
+            var f = cb_obj.get('value')
+            console.log(f)
+            x = data['x']
+            y = data['y']
+            for (i = 0; i < x.length; i++) {
+                y[i] = Math.pow(x[i], f)
+            }
+            source.trigger('change');
+        """)
 
         #print(words)
 
     #slider = Slider(start=0.1, end=4, value=1, step=.1, title="power", callback=callback)
     #layout = vform(slider, plot)
 
-    text_input = TextInput(value="", title="power", callback=callback)
-    layout = vform(text_input, bar)
+        text_input = TextInput(value="", title="power", callback=callback)
+        layout = vform(text_input, bar)
 
 
-    script1 ,div5, = components(layout)
-    cdn_js=CDN.js_files[0]
-    cdn_css=CDN.css_files[0]
-    cdn_js2=CDN.js_files[1]
-    cdn_css2=CDN.css_files[1]
-    return render_template("graph.html",
-    script1=script1,
-    div5=div5,
-    cdn_js=cdn_js,
-    cdn_css=cdn_css,
-    cdn_js2=cdn_js2,
-    cdn_css2=cdn_css2)
+        script1 ,div5, = components(layout)
+        cdn_js=CDN.js_files[0]
+        cdn_css=CDN.css_files[0]
+        cdn_js2=CDN.js_files[1]
+        cdn_css2=CDN.css_files[1]
+        return render_template("graph.html",
+        script1=script1,
+        div5=div5,
+        cdn_js=cdn_js,
+        cdn_css=cdn_css,
+        cdn_js2=cdn_js2,
+        cdn_css2=cdn_css2)
+
+    plotchart(['Trump'])
 
 @app.route('/references')
 def references():
@@ -291,4 +328,4 @@ def contact():
     return render_template("contact.html")
 
 if __name__=="__main__":
-    app.run(debug=True)
+    app.run(port = 5000, host = '140.116.177.150', debug=True)
