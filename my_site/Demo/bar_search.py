@@ -8,7 +8,7 @@ Created on Sat Jan 14 12:47:52 2017
 import re
 import pandas as pd
 from collections import Counter
-import twittersearch as search
+import tweepysearch as search
 from nltk.corpus import stopwords
 import string
 from bokeh.charts import output_file, show, Bar
@@ -47,8 +47,9 @@ def preprocess(s, lowercase=False):
 
     
     
-def plotchart(q):
-    text, time, tweets = search.twittersearch(q = q , count = 100)
+def plotchart(q, number, since, until):
+    number = 0
+    text, time = search.twittersearch(q = q , number = number, since = since, until = until)
 
     punctuation = list(string.punctuation)
     stop = stopwords.words('english') + punctuation + ['RT', 's', 'u2026', 'The', 'amp', 'By', 'points',
