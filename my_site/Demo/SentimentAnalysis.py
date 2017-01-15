@@ -179,11 +179,11 @@ def writeToTxt(data, fileName):
             print(word, file = file)
 
 def save(data, fileName):
-    with open(fileName + '.pickle', 'wb') as file:
+    with open('Pickle/' + fileName + '.pickle', 'wb') as file:
         pickle.dump(data, file)
 
 def load(fileName):
-    with open(fileName + '.pickle', 'rb') as file:
+    with open('Pickle/' + fileName + '.pickle', 'rb') as file:
         data = pickle.load(file)
     return data
 
