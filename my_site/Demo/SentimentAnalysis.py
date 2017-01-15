@@ -240,28 +240,57 @@ class VoteClassifier(ClassifierI):
 
         return predictions
 
-def predict(texts):
+def getFeatures(texts):
     features = []
 
     for text in texts:
         words = wordsFilterInText(word_tokenize(text))
         features.append(buildClassifierFeature(words))
 
-    temp = len(classifiers) - 1
-    for i in range(temp):
-        print(classifierNames[i] + ' predict ')
-        print(classifiers[i].predict(features))
+    return features
 
-    r = classifiers[i].predict(features)
-    print(classifierNames[temp] + ' predict ')
-    print(r)
+def predictAsList(texts):
+    '''
+    features = []
 
-    dic = {}
-    dic['pos'] = np.count_nonzero(r == 'pos')
-    dic['neg'] = np.count_nonzero(r =='neg')
+    for text in texts:
+        words = wordsFilterInText(word_tokenize(text))
+        features.append(buildClassifierFeature(words))
+    '''
 
-    print(dic)
-    return dic
+    result = classifiers[len(classifiers) - 1].predict(getFeatures(texts))
+
+    resultList = []
+    resultList.append(('neg', result.count('neg')))
+    resultList.append(('pos', result.count('pos')))
+    return resultList
+
+def predictAsDict(texts, number, times):
+    result = classifiers[len(classifiers) - 1].predict(getFeatures(texts))
+    
+    #print(times[0].day)
+
+    #length = len(texts)
+    #print('texts length = ' + str(len(texts)))
+
+    resultDic = {}
+    resultDic['date'] = []
+    resultDic['score'] = []
+
+    length = len(texts)
+    i = 0
+    while(i < length):
+        resultDic['date'].append(times[i])
+
+        tempList = result[i: i + number]
+        i += number
+        print('temp list len = ' + str(len(tempList)))
+        score = tempList.count('pos') / number * 100.0
+        resultDic['score'].append(score)
+
+    print('result dic')
+    print(resultDic)
+    return resultDic
 
 def predictOnHtml(text):
     print('text preprocessing starts')
@@ -549,15 +578,10 @@ def main():
         '''
 
         #print('twitter search starts')
+
+        texts, times = search.twittersearch(q = ['RUSSIA', 'USA'], number = 10, since = '2017-01-10', until = '2017-01-12')
         
-        #texts, tweets = search.twittersearch(q = ['RUSSIA', 'USA'], number = 10)
-        
-        # texts is []
-        #for text in texts:
-        #    print('text: ' + text)
-        #    print(predict(text))
-        
-        #predict(texts)
+        predictAsList(texts)
 
         #print('twitter search ends')
 

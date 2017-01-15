@@ -16,6 +16,7 @@ def about():
     from bokeh.models import CustomJS, ColumnDataSource, Slider
     from bokeh.plotting import figure, output_file, show, curdoc
     from bokeh.models.widgets import TextInput
+    import numpy as np
 
     #for twitter parsing
     import tweepysearch as search
@@ -24,7 +25,7 @@ def about():
     import SentimentAnalysis as sa
 
     #to parse old data from twitter
-    texts, tweets = search.twittersearch(q = ['Trump'], number = 10)
+    texts, tweets = search.twittersearch(q = ['Trump'], number = 10, since = '2017-01-10', until = '2017-01-12')
 
     #to do sentiment analysis and to return the result as dictionary
     result = sa.predict(texts)
@@ -80,13 +81,19 @@ def sentianalysis():
     from bokeh.models.widgets import TextInput
     from bokeh.layouts import gridplot
     from bokeh.plotting import figure, show, output_file
-    from bokeh.sampledata.stocks import AAPL, GOOG, IBM, MSFT
+    #from bokeh.sampledata.stocks import AAPL, GOOG, IBM, MSFT
     from bokeh.embed import components
     from bokeh.resources import CDN
+
+    #for twitter parsing
+    import tweepysearch as search
+    #for sentiment
+    import SentimentAnalysis as sa
 
     def datetime(x):
         return np.array(x, dtype=np.datetime64)
 
+    '''
     # graph 1
     p1 = figure(x_axis_type="datetime", title="Stock Closing Prices")
     p1.grid.grid_line_alpha=0.3
@@ -98,7 +105,20 @@ def sentianalysis():
     p1.line(datetime(IBM['date']), IBM['adj_close'], color='#33A02C', legend='IBM')
     p1.line(datetime(MSFT['date']), MSFT['adj_close'], color='#FB9A99', legend='MSFT')
     p1.legend.location = "top_left"
+    '''
 
+    number = 10
+    texts, times = search.twittersearch(q = ['Trump'], number = number, since = '2017-01-10', until = '2017-01-14')
+
+    result = sa.predictAsDict(texts, number, times)
+
+    p1 = figure(x_axis_type="datetime", title="Sentiment Analysis")
+    p1.grid.grid_line_alpha=0.3
+    p1.xaxis.axis_label = 'Date'
+    p1.yaxis.axis_label = 'Score'
+
+    p1.line(datetime(result['date']), result['score'], color='#A6CEE3', legend='Trump')
+    p1.legend.location = 'top_left'
 
 
     # graph 2
@@ -200,90 +220,13 @@ def graph():
     #for sentiment analysis
     import SentimentAnalysis as sa
 
-    emoticons_str = r"""
-        (?:
-            [:=;] # Eyes
-            [oO\-]? # Nose (optional)
-            [D\)\]\(\]/\\OpP] # Mouth
-        )"""
+    #for bar chart
+    import bar_search
 
-    regex_str = [
-        emoticons_str,
-        r'<[^>]+>', # HTML tags
-        r'(?:@[\w_]+)', # @-mentions
-        r"(?:\#+[\w_]+[\w\'_\-]*[\w_]+)", # hash-tags
-        r'http[s]?://(?:[a-z]|[0-9]|[$-_@.&amp;+]|[!*\(\),]|(?:%[0-9a-f][0-9a-f]))+', # URLs
+    bar = bar_search.plotchart(q = 'Trump', number = 10, since = '2017-01-10', until = '2017-01-11')
 
-        r'(?:(?:\d+,?)+(?:\.?\d+)?)', # numbers
-        r"(?:[a-z][a-z'\-_]+[a-z])", # words with - and '
-        r'(?:[\w_]+)', # other words
-        r'(?:\S)' # anything else
-    ]
-
-    tokens_re = re.compile(r'('+'|'.join(regex_str)+')', re.VERBOSE | re.IGNORECASE)
-    emoticon_re = re.compile(r'^'+emoticons_str+'$', re.VERBOSE | re.IGNORECASE)
-
-    def tokenize(s):
-        return tokens_re.findall(s)
-
-    def preprocess(s, lowercase=False):
-        tokens = tokenize(s)
-        if lowercase:
-            tokens = [token if emoticon_re.search(token) else token.lower() for token in tokens]
-        return tokens
-
-    def plotchart(q):
-        
-        text, time = search.twittersearch(q = q , number = 10)
-
-        punctuation = list(string.punctuation)
-        stop = stopwords.words('english') + punctuation + ['RT', 's', 'u2026', 'The', 'amp', 'By', 'points',
-        'K', 'You', 'I', 'said', 'https', 'u2019s', '8', 'one', 'want','via', 'This', 'As', 'says', 'would', 'next',
-        'why', 'u2019', 'u2605', 'A', 'htt', 'ud83d', 'like', '1', 'u2013']
-
-        count_all = Counter()
-        for i in range(0,len(text),1):
-
-            #terms_all = [term for term in preprocess(tweets[i])]
-            terms_stop = [term for term in preprocess(text[i]) if term not in stop]
-            # Update the counter
-            count_all.update(terms_stop)
-            # Print the first 5 most frequent words
-            #print(count_all.most_common(20))
-
-
-        for key, value in count_all.most_common(20) :
-            print(key, value)
-
-        words = pd.DataFrame.from_dict(count_all.most_common(20), orient='columns', dtype = None, data=dict(x="Key Words", y="Words Count"))
-        source = ColumnDataSource(data=dict(x='Key Words', y='Words Count'))
-        words.columns = ['Key Words', 'Words Count']
-        
-        '''
-        texts, time = search.twittersearch(q = q, number = 10)
-        result = sa.predict(texts)
-
-        labelX = 'Sentiment'
-        labelY = 'Count'
-
-        resultList = []
-
-        for key in result.keys():
-            resultList.append((key, result[key]))
-
-        words = pd.DataFrame.from_dict(data = result)
-        source = ColumnDataSource(data=dict(x=labelX, y=labelY))
-        words.columns = [labelX, labelY]
-        '''
-
-        a = 'Words Distribution of '
-        title = a + q
-
-        bar = Figure(plot_width=400, plot_height=400)
-        bar.Bar(source, labelX,values=labelY,
-                  title = title, legend='top_right', bar_width=0.5)
-
-        callback = CustomJS(args=dict(source=source), code="""
+    '''
+    callback = CustomJS(args=dict(source=source), code="""
             var data = source.get('data');
             var f = cb_obj.get('value')
             console.log(f)
@@ -300,24 +243,23 @@ def graph():
     #slider = Slider(start=0.1, end=4, value=1, step=.1, title="power", callback=callback)
     #layout = vform(slider, plot)
 
-        text_input = TextInput(value="", title="power", callback=callback)
-        layout = vform(text_input, bar)
+    #text_input = TextInput(value="", title="power", callback=callback)
+    #layout = vform(text_input, bar)
+    '''
 
-
-        script1 ,div5, = components(layout)
-        cdn_js=CDN.js_files[0]
-        cdn_css=CDN.css_files[0]
-        cdn_js2=CDN.js_files[1]
-        cdn_css2=CDN.css_files[1]
-        return render_template("graph.html",
-        script1=script1,
-        div5=div5,
-        cdn_js=cdn_js,
-        cdn_css=cdn_css,
-        cdn_js2=cdn_js2,
-        cdn_css2=cdn_css2)
-
-    plotchart(['Trump'])
+    #script1 ,div5, = components(layout)
+    script1 ,div5, = components(bar)
+    cdn_js=CDN.js_files[0]
+    cdn_css=CDN.css_files[0]
+    cdn_js2=CDN.js_files[1]
+    cdn_css2=CDN.css_files[1]
+    return render_template("graph.html",
+    script1=script1,
+    div5=div5,
+    cdn_js=cdn_js,
+    cdn_css=cdn_css,
+    cdn_js2=cdn_js2,
+    cdn_css2=cdn_css2)
 
 @app.route('/references')
 def references():

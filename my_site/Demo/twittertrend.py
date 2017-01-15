@@ -16,6 +16,7 @@ except ImportError:
 from twitter import Twitter, OAuth
 #import twittersearch as search
 import tweepysearch as search
+import datetime
 import time
 
 
@@ -58,39 +59,15 @@ def trend(number,lag):
             print('name'+ str(i) + 'has hashtag:' + y.split('#')[1])
             hashtable.append(y.split('#')[1])
     
-    #b = 'twitter_Top_10_trend_'
-    #c = '.'
-    #d = 'txt'
     result = []
-    
-    start = time.time()
-    
-    for i in range(0, 10, 1):
-        x, y = search.twittersearch(q = hashtable[i], count = number)
-        result.append(x)
-        print(i)
-        time.sleep(lag)
-        #a = str(i)
-        #f = b + a + c + d
-        #with open(f, 'w') as outfile:
-            #json.dump(x, outfile)  
-        
-    end= time.time()
-    
-    elapsed = end - start
+    current = datetime.datetime.now()
+    strCurrent = datetime.datetime.strftime(current, '%Y-%m-%d')
+    tomorrow = current + datetime.timedelta(days = 1)
+    strTomorrow = datetime.datetime.strftime(tomorrow, '%Y-%m-%d')
 
-    print("Trend Time taken:", elapsed, "seconds.")
-    
-    #time.sleep(lag)
+    for i in range(0, 10, 1):
+        x, y = search.twittersearch(q = hashtable[i], number = number, since = strCurrent, until = strTomorrow)
+        result.append(x)
+        time.sleep(lag)
     
     return result, hashtable
-    
-
-
-
-
-
-
-    
-
-    
