@@ -293,12 +293,12 @@ def main():
 
 
     if style == 0:
-        '''
+        
         dataset = loadData()
         random.shuffle(dataset)
 
-        # # to get the part of dataset
-        #dataset = dataset[:100]
+        # to get the part of dataset
+        dataset = dataset[:100]
 
         # to filter data
         print('filtering data start')
@@ -352,8 +352,8 @@ def main():
         save(testClassifierFeatures, 'TestClassifierFeatures')
         save(testTargets, 'TestTargets')
         print('saving test classifier features and test targets end')
+        
         '''
-
         print('loading features and targets starts')
 
         trainingClassifierFeatures = load('TrainingClassifierFeatures')
@@ -370,6 +370,7 @@ def main():
         # # to get data from pickle
         # trainingClassifierFeatures = load('TrainingClassifierFeatures')
         # trainingTargets = load('TrainingTargets')
+        '''
 
         # to train the sentiment models
         global classifiers
@@ -548,23 +549,23 @@ def main():
         print('twitter parsetw ends')
         '''
 
-        #print('twitter search starts')
+        print('twitter search starts')
         
-        #texts, tweets = search.twittersearch(q = ['RUSSIA', 'USA'], number = 10)
+        texts, tweets = search.twittersearch(q = ['RUSSIA', 'USA'], number = 10)
         
-        # texts is []
-        #for text in texts:
-        #    print('text: ' + text)
-        #    print(predict(text))
+        texts is []
+        for text in texts:
+            print('text: ' + text)
+            print(predict(text))
         
-        #predict(texts)
+        predict(texts)
 
-        #print('twitter search ends')
+        print('twitter search ends')
 
-        #length = len(texts)
-        #for i in range(length):
-        #    texts[i] = wordsFilterInText(word_tokenize(texts[i]))
+        length = len(texts)
+        for i in range(length):
+            texts[i] = wordsFilterInText(word_tokenize(texts[i]))
 
-        # for i in range(len(classifiers)):
+        #for i in range(len(classifiers)):
         #     print(classifierNames[i], 'Algo accuracy percent: ', (accuracy(classifiers[i], testClassifierFeatures, testTargets)) * 100)
 main()

@@ -11,8 +11,7 @@ Created on Thu Dec 29 21:07:07 2016
 
 import tweepy
 import re
-from time import gmtime, strftime
-
+import datetime
 
 def twittersearch(q, number, since, until):
     # Variables that contains the user credentials to access Twitter API
@@ -24,61 +23,66 @@ def twittersearch(q, number, since, until):
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
     api = tweepy.API(auth)
-
-    # Search for some words"
-
+    
     tweets = []
     tweetstime = []
-
-    a = since.split(' ')
-
-    b = a[0].split('-')
-
-    c = until.split(' ')
-
-    d = c[0].split('-')
-
-
-    current_time = strftime("%Y-%m-%d", gmtime())
-
-    current_time = current_time.split('-')
-
-
-    if(int(d[2]) - int(b[2]) > 7):
+    
+    since = datetime.datetime.strptime(since, '%Y-%m-%d')
+    until = datetime.datetime.strptime(until, '%Y-%m-%d')
+    
+    current = datetime.datetime.now()
+    lastweek = current - datetime.timedelta(days = 7)
+    lt = datetime.datetime.strftime(lastweek,'%Y-%m-%d')
+    
+    differ = until - since
+    
+    if(differ.days > 7):
     
         for i in range(0, 7, 1):
             print(i)
             print('range > 7')
             print('-----------')
-            new_since = current_time[0] + '-' + current_time[1] + '-' + str(int(current_time[2])+i -7)
-            new_until = current_time[0] + '-' + current_time[1] + '-' + str(int(current_time[2])+i -6)
-        
+            #new_since = current_time[0] + '-' + current_time[1] + '-' + str(int(current_time[2])+i -7)
+            #new_until = current_time[0] + '-' + current_time[1] + '-' + str(int(current_time[2])+i -6)
+            a = i + 1
+            new_since = lastweek + datetime.timedelta(days = a)
+            new_since = datetime.datetime.strftime(new_since, '%Y-%m-%d')
+            b = i + 2
+            new_until = lastweek + datetime.timedelta(days = b)
+            new_until = datetime.datetime.strftime(new_until, '%Y-%m-%d')
             print(new_since)
             print(new_until)
+            #print(new_since)
+            #print(new_until)
             for statues in tweepy.Cursor(api.search, q=q, lang="en", since = new_since, until = new_until).items(number):
                 tweets.append(statues.text)
                 tweetstime.append(statues.created_at)
-            
-    elif(int(d[2]) - int(b[2]) > 1):
+    elif(differ.days > 1):
     
-        for i in range(0, int(d[2])-int(b[2]), 1):
+        for i in range(0, differ.days, 1):
             print(i)
-            print('range < 7')
+            print('range <= 7')
             print('-----------')
-            new_since = b[0] + '-' + b[1] + '-' + str(int(b[2])+i)
-            new_until = b[0] + '-' + b[1] + '-' + str(int(b[2])+1+i)
-        
+
+            new_since = since + datetime.timedelta(days = i)
+            new_since = datetime.datetime.strftime(new_since, '%Y-%m-%d')
+            a = i + 1
+            new_until = since + datetime.timedelta(days = a)
+            new_until = datetime.datetime.strftime(new_until, '%Y-%m-%d')
+            
             print(new_since)
             print(new_until)
             for statues in tweepy.Cursor(api.search, q=q, lang="en", since = new_since, until = new_until).items(number):
                 tweets.append(statues.text)
                 tweetstime.append(statues.created_at)
 
-    else:
-    
+    elif(0 < differ.days <= 1):
+        print('range <= 1 day')
         for statues in tweepy.Cursor(api.search, q=q, lang="en", since = since, until = until).items(number):
             tweets.append(statues.text)
             tweetstime.append(statues.created_at)
+    else:
+        print('error occur!! Please check your date format. It must be YYYY/mm/dd.')
     
     text = []
     for i in range(0, len(tweets), 1):
