@@ -18,7 +18,7 @@ import time
 #total key number
 keyNumber = 3
 
-def twittersearch(q, number, since, until, lag):
+def twittersearch(q, number, since, until, lag = 1):
     # Variables that contains the user credentials to access Twitter API
     #the key we want to use
     #0 => CYo, 1 => Roy, 2 => %%
