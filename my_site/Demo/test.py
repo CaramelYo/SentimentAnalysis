@@ -18,6 +18,8 @@ from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.svm import SVC, LinearSVC, NuSVC
 from sklearn.decomposition import LatentDirichletAllocation as LDA
 
+import delete
+
 #import twittersearch as search
 #import twittertrend
 #mport twitterstream as stream
@@ -65,6 +67,8 @@ def loadData():
     elif(isMovieReviews == 0):
         with open('Data/PositiveReviews.txt') as f:
             lines = f.readlines()
+
+        print(type(lines))
 
         dataset = [[word_tokenize(line), 'pos']
                   for line in lines]
@@ -293,6 +297,7 @@ def main():
         #print('show after word_tokenize')
         #rint(word_tokenize(dataset[228][0]))
 
+        '''
         length = len(dataset)
 
         for l in range(length):
@@ -326,6 +331,7 @@ def main():
             dataset[l][0] = newWords
             del newWords
             #print(dataset[l][0])
+        '''
 
         print('loading features and targets starts')
 
