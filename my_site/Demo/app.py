@@ -50,7 +50,7 @@ def aboutUpdate(q, number, since, until):
 
     sa.printOut('update')
     number = 10
-    texts, times = search.twittersearch(q = q, number = number, since = '2017-01-10', until = '2017-01-16')
+    texts, times, fullTexts = search.twittersearch(q = q, number = number, since = '2017-01-10', until = '2017-01-16')
 
     result = sa.predictAsDict(texts, number, times)
 
@@ -135,7 +135,7 @@ def sentiUpdate(q, number, since, until):
     #texts, times = search.twittersearch(q = q, number = 10, since = '2017-01-10', until = '2017-01-12')
 
     sa.printOut('update')
-    texts, times = search.twittersearch(q = q, number = number, since = since, until = until)
+    texts, times, fullTexts = search.twittersearch(q = q, number = number, since = since, until = until)
 
     result = sa.predictAsDict(texts, number, times)
 
@@ -173,7 +173,7 @@ def sentiUpdate(q, number, since, until):
     '''
 
     number = 10
-    texts, times = search.twittersearch(q = ['Trump'], number = number, since = '2017-01-10', until = '2017-01-14')
+    texts, times, fullTexts = search.twittersearch(q = ['Trump'], number = number, since = '2017-01-10', until = '2017-01-14')
 
     result = sa.predictAsDict(texts, number, times)
 

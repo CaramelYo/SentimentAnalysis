@@ -240,8 +240,9 @@ def getFeatures(texts):
     features = []
 
     for text in texts:
-        words = wordsFilterInText(word_tokenize(text))
-        features.append(buildClassifierFeature(words))
+        features.append(buildClassifierFeature(text))
+        #words = wordsFilterInText(word_tokenize(text))
+        #features.append(buildClassifierFeature(words))
 
     return features
 
@@ -254,6 +255,7 @@ def predictAsList(texts):
         features.append(buildClassifierFeature(words))
     '''
 
+    #result = classifiers[len(classifiers) - 1].predict(getFeatures(texts))
     result = classifiers[len(classifiers) - 1].predict(getFeatures(texts))
 
     resultList = []
@@ -262,6 +264,7 @@ def predictAsList(texts):
     return resultList
 
 def predictAsDict(texts, number, times):
+    #result = classifiers[len(classifiers) - 1].predict(getFeatures(texts))
     result = classifiers[len(classifiers) - 1].predict(getFeatures(texts))
     
     #print(times[0].day)
