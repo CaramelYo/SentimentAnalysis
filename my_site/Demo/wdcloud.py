@@ -15,7 +15,7 @@ import tweepysearch as search
 
 # Read the whole text.
 # text = open(path.join(d, 'twitter_data.txt')).read()
-def wordcloud(q, number, since, until):
+def word_cloud(q, number, since, until):
     
     all_text, time , first_text = search.twittersearch(q = q , number = number, since = since, until = until)
     

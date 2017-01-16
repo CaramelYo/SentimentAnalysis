@@ -7,9 +7,27 @@ app=Flask(__name__)
 def home():
     return render_template("index.html")
 
-@app.route('/about')
+@app.route('/about', methods = ['GET', 'POST'])
 def about():
-    from bokeh.layouts import WidgetBox
+    import SentimentAnalysis as sa
+
+    if request.method == 'GET':
+        keyWords = request.args.get('keyWords', 'Trump')
+        number = request.args.get('number', 1000, type=int)
+        since = request.args.get('since', '2017-01-15')
+        until = request.args.get('until', '2017-01-16')
+
+    else:
+        keyWords = request.form['keyWords']
+        number = request.form['number']
+        since = request.form['since']
+        keyWords = request.form['until']
+
+    return aboutUpdate(keyWords, number, since, until)
+
+
+def aboutUpdate(q, number, since, until):
+    from bokeh.layouts import gridplot, WidgetBox
     from bokeh.embed import components
     from bokeh.resources import CDN
     from bokeh.io import vform
@@ -24,57 +42,104 @@ def about():
     #for sentiment analysis
     import SentimentAnalysis as sa
 
+    def datetime(x):
+        return np.array(x, dtype=np.datetime64)
+
     #to parse old data from twitter
-    texts, tweets = search.twittersearch(q = ['Trump'], number = 10, since = '2017-01-10', until = '2017-01-12')
+    #texts, times = search.twittersearch(q = q, number = 10, since = '2017-01-10', until = '2017-01-12')
 
-    #to do sentiment analysis and to return the result as dictionary
-    result = sa.predict(texts)
+    sa.printOut('update')
+    number = 10
+    texts, times = search.twittersearch(q = q, number = number, since = '2017-01-10', until = '2017-01-16')
 
-    #x = [x*0.005 for x in range(0, 200)]
-    #y = x
+    result = sa.predictAsDict(texts, number, times)
 
-    #source = ColumnDataSource(data=dict(x=x, y=y))
+    p1 = figure(x_axis_type="datetime", title="Sentiment Analysis")
+    p1.grid.grid_line_alpha=0.3
+    p1.xaxis.axis_label = 'Date'
+    p1.yaxis.axis_label = 'Score'
 
-    source = ColumnDataSource(data=result)
+    p1.line(datetime(result['date']), result['score'], color='#A6CEE3', legend=q)
+    p1.legend.location = 'top_left'
 
-    plot = figure(plot_width=400, plot_height=400)
-    plot.line('x', 'y', source=source, line_width=3, line_alpha=0.6)
-
-    callback = CustomJS(args=dict(source=source), code="""
-            var data = source.get('data');
-            var f = cb_obj.get('value')
-            console.log(f)
-            x = data['x']
-            y = data['y']
-            for (i = 0; i < x.length; i++) {
-                y[i] = Math.pow(x[i], f)
-            }
-            source.trigger('change');
-        """)
-
-    #slider = Slider(start=0.1, end=4, value=1, step=.1, title="power", callback=callback)
-    #layout = vform(slider, plot)
-
-    text_input = TextInput(value="1", title="power", callback=callback)
-    layout = vform(text_input, plot)
-
-
-    script1 ,div3, = components(layout)
+    script1, div3, = components(gridplot([[p1]], plot_width=500, plot_height=500))
     cdn_js=CDN.js_files[0]
     cdn_css=CDN.css_files[0]
-    cdn_js2=CDN.js_files[1]
-    cdn_css2=CDN.css_files[1]
     return render_template("about.html",
     script1=script1,
     div3=div3,
     cdn_js=cdn_js,
-    cdn_css=cdn_css,
-    cdn_js2=cdn_js2,
-    cdn_css2=cdn_css2,)
+    cdn_css=cdn_css)
 
 
-@app.route('/sentianalysis')
+@app.route('/sentianalysis', methods = ['GET', 'POST'])
 def sentianalysis():
+    import SentimentAnalysis as sa
+
+    sa.printOut('about start')
+
+    if request.method == 'GET':
+        #                           name          default
+        keyWords = request.args.get('keyWords', 'Trump')
+        number = request.args.get('number', 1000, type=int)
+        since = request.args.get('since', '2017-01-10')
+        until = request.args.get('until', '2017-01-16')
+        #sa.printOut('inquiry in start with get')
+        #sa.printOut(keyWords)
+
+    else:
+        keyWords = request.form['keyWords']
+        number = request.form['number']
+        since = request.form['since']
+        keyWords = request.form['until']
+        #sa.printOut('inquiry in start with post')
+        #sa.printOut(keyWords)
+
+    '''
+    try:
+        keyWords = request.args.get('text', '')
+        #keyWords = request.get['text']
+        #keyWords = requests.form['text']
+        #print('YO')
+        #print(keyWords)
+        sa.printOut('inquiry in start')
+        sa.printOut(keyWords)
+    except:
+        sa.printOut('except')
+        keyWords = 'Trump'
+    '''
+
+    return sentiUpdate(keyWords,number,since,until)
+
+
+def sentiUpdate(q, number, since, until):
+    from bokeh.layouts import gridplot, WidgetBox
+    from bokeh.embed import components
+    from bokeh.resources import CDN
+    from bokeh.io import vform
+    from bokeh.models import CustomJS, ColumnDataSource, Slider
+    from bokeh.plotting import figure, output_file, show, curdoc
+    from bokeh.models.widgets import TextInput
+    import numpy as np
+
+    #for twitter parsing
+    import tweepysearch as search
+
+    #for sentiment analysis
+    import SentimentAnalysis as sa
+
+    def datetime(x):
+        return np.array(x, dtype=np.datetime64)
+
+    #to parse old data from twitter
+    #texts, times = search.twittersearch(q = q, number = 10, since = '2017-01-10', until = '2017-01-12')
+
+    sa.printOut('update')
+    texts, times = search.twittersearch(q = q, number = number, since = since, until = until)
+
+    result = sa.predictAsDict(texts, number, times)
+
+    '''
     import numpy as np
     from bokeh.io import vform
     from bokeh.models import CustomJS, ColumnDataSource, Slider
@@ -93,7 +158,7 @@ def sentianalysis():
     def datetime(x):
         return np.array(x, dtype=np.datetime64)
 
-    '''
+
     # graph 1
     p1 = figure(x_axis_type="datetime", title="Stock Closing Prices")
     p1.grid.grid_line_alpha=0.3
@@ -120,7 +185,7 @@ def sentianalysis():
     p1.line(datetime(result['date']), result['score'], color='#A6CEE3', legend='Trump')
     p1.legend.location = 'top_left'
 
-
+    '''
     # graph 2
     #Creating label annotations for spans
 
@@ -189,8 +254,9 @@ def sentianalysis():
     f.add_layout(label_span_gas_average_boil)
     f.add_layout(label_span_liquid_average_boil)
     f.add_layout(label_span_solid_average_boil)
+    '''
 
-    script1, div2, = components(gridplot([[p1,f]], plot_width=500, plot_height=500))
+    script1, div2, = components(gridplot([[p1]], plot_width=500, plot_height=500))
     cdn_js=CDN.js_files[0]
     cdn_css=CDN.css_files[0]
     return render_template("sentianalysis.html",
@@ -270,4 +336,4 @@ def contact():
     return render_template("contact.html")
 
 if __name__=="__main__":
-    app.run(debug=True)
+    app.run(port = 5000, host = '140.116.177.150', debug=True)

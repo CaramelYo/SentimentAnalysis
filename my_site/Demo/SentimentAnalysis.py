@@ -1,6 +1,3 @@
-# for python 3 to python 2
-from __future__ import print_function
-
 import nltk
 import random
 import pickle
@@ -18,7 +15,6 @@ from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.svm import SVC, LinearSVC, NuSVC
 from sklearn.decomposition import LatentDirichletAllocation as LDA
 
-#import twittersearch as search
 import twittertrend
 import tweepysearch as search
 import twitterstream as stream
@@ -315,6 +311,9 @@ def predictOnHtml(text):
 
     return predictionHtml
 
+def printOut(text):
+    print(text)
+
 def main():
 ##  to disable the warnings
     warnings.filterwarnings("ignore")
@@ -579,9 +578,9 @@ def main():
 
         #print('twitter search starts')
 
-        texts, times = search.twittersearch(q = ['RUSSIA', 'USA'], number = 10, since = '2017-01-10', until = '2017-01-12')
+        #texts, times = search.twittersearch(q = ['RUSSIA', 'USA'], number = 10, since = '2017-01-10', until = '2017-01-12')
         
-        predictAsList(texts)
+        #predictAsList(texts)
 
         #print('twitter search ends')
 

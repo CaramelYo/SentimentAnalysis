@@ -20,10 +20,10 @@ import re
 
 def twittersearch(q, count):
     # Variables that contains the user credentials to access Twitter API
-    ACCESS_TOKEN = '3060634116-BRClW1IjisNuVAP1LMphUHSWFx4DWWOBQjfWThE'
-    ACCESS_SECRET = 'SPZS5erC2jyhVkuxcvvtO1xyOuUupA8WySME9htg9Xy00'
-    CONSUMER_KEY = 'wtWw3J6IzZhW5vtlNhJ16xfVS'
-    CONSUMER_SECRET = 'rw6G0ErwEEos6Xvl6ua59csCCuGZwkHJZ1IOZ94PAV5OvVHAeq'
+    ACCESS_TOKEN = '841573177-LVleaagDeAk8k1lvnvVFjL9aJ7QsNTIPsXf4V3CU'
+    ACCESS_SECRET = 'u9L1nX6Vp5Hg1XRBhDgwwlxzJq96pUdiruf1nzOFXfpE8'
+    CONSUMER_KEY = 'HIe2XrWNqcHX1KsoHF1HWkmcV'
+    CONSUMER_SECRET = 'SImYk27PgiE6ockPjMbKjtahfzztZDv2N3mtRFh1GdemUT5sm7'
 
     oauth = OAuth(ACCESS_TOKEN, ACCESS_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
 

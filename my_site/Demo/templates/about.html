@@ -115,7 +115,15 @@
 
 		<!-- About -->
 				<!-- about section -->
-				{{script1 | safe}}
+				<h1>Inquire sentiment graph</h1>
+				<form action = '/sentianalysis' method = 'GET'>
+					<input type = 'text' name = 'keyWords' placeholder = 'type any words'>
+					<input type = 'text' name = 'number' placeholder = 'number of tweets'>
+					<input type = 'text' name = 'since' placeholder = 'from 2016-01-xx'>
+					<input type = 'text' name = 'until' placeholder = 'to 2016-01-xx'>
+					<input type = 'submit' name = 'inquiry' value = 'inquire'>
+				</form>
+        {{script1 | safe}}
 				{{div3 | safe}}
 
 		<!-- End About -->
