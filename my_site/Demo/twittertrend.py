@@ -19,15 +19,28 @@ import tweepysearch as search
 import datetime
 import time
 
+#total key number
+keyNumber = 3
 
 def trend(number,lag):
 # Variables that contains the user credentials to access Twitter API 
-    ACCESS_TOKEN = '3060634116-BRClW1IjisNuVAP1LMphUHSWFx4DWWOBQjfWThE'
-    ACCESS_SECRET = 'SPZS5erC2jyhVkuxcvvtO1xyOuUupA8WySME9htg9Xy00'
-    CONSUMER_KEY = 'wtWw3J6IzZhW5vtlNhJ16xfVS'
-    CONSUMER_SECRET = 'rw6G0ErwEEos6Xvl6ua59csCCuGZwkHJZ1IOZ94PAV5OvVHAeq'
+    #the key we want to use
+    #0 => CYo, 1 => Roy, 2 => %%
+    usedKeyNumber = 0
 
-    oauth = OAuth(ACCESS_TOKEN, ACCESS_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
+    usedKeys = [] 
+    with open('TwitterKeys.txt') as f:
+        #to skip title
+        f.readline()
+        for i in range(usedKeyNumber):
+            f.readline()
+        usedKeys.append(f.readline().rstrip())
+        for i in range(3):
+            for j in range(keyNumber):
+                f.readline()        
+            usedKeys.append(f.readline().rstrip())
+
+    oauth = OAuth(usedKeys[2], usedKeys[3], usedKeys[0], usedKeys[1])
 
     twitter = Twitter(auth=oauth)
 
@@ -66,8 +79,8 @@ def trend(number,lag):
     strTomorrow = datetime.datetime.strftime(tomorrow, '%Y-%m-%d')
 
     for i in range(0, 10, 1):
-        x, y = search.twittersearch(q = hashtable[i], number = number, since = strCurrent, until = strTomorrow)
+        x, y, z = search.twittersearch(q = hashtable[i], number = number, since = strCurrent, until = strTomorrow)
         result.append(x)
         time.sleep(lag)
-    
+
     return result, hashtable

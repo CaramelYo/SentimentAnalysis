@@ -14,17 +14,31 @@ import re
 import datetime
 import delete as de
 
+#total key number
+keyNumber = 3
+
 def twittersearch(q, number, since, until):
     # Variables that contains the user credentials to access Twitter API
-    consumer_key = 'wtWw3J6IzZhW5vtlNhJ16xfVS'
-    consumer_secret = 'rw6G0ErwEEos6Xvl6ua59csCCuGZwkHJZ1IOZ94PAV5OvVHAeq'
-    access_token = '3060634116-BRClW1IjisNuVAP1LMphUHSWFx4DWWOBQjfWThE'
-    access_token_secret = 'SPZS5erC2jyhVkuxcvvtO1xyOuUupA8WySME9htg9Xy00'
+    #the key we want to use
+    #0 => CYo, 1 => Roy, 2 => %%
+    usedKeyNumber = 0
 
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    auth.set_access_token(access_token, access_token_secret)
+    usedKeys = [] 
+    with open('TwitterKeys.txt') as f:
+        #to skip title
+        f.readline()
+        for i in range(usedKeyNumber):
+            f.readline()
+        usedKeys.append(f.readline().rstrip())
+        for i in range(3):
+            for j in range(keyNumber):
+                f.readline()        
+            usedKeys.append(f.readline().rstrip())
+
+    auth = tweepy.OAuthHandler(usedKeys[0], usedKeys[1])
+    auth.set_access_token(usedKeys[2], usedKeys[3])
     api = tweepy.API(auth)
-    
+
     tweets = []
     tweetstime = []
     
@@ -96,4 +110,3 @@ def twittersearch(q, number, since, until):
     first_text = de.delete_first(text)
         
     return all_text, tweetstime, first_text
-    

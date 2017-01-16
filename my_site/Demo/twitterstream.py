@@ -24,14 +24,28 @@ except ImportError:
 from twitter import OAuth, TwitterStream
 import re
 
+#total key number
+keyNumber = 3
+
 def parsetw(track, number):    
     # Variables that contains the user credentials to access Twitter API
-    ACCESS_TOKEN = '3060634116-BRClW1IjisNuVAP1LMphUHSWFx4DWWOBQjfWThE'
-    ACCESS_SECRET = 'SPZS5erC2jyhVkuxcvvtO1xyOuUupA8WySME9htg9Xy00'
-    CONSUMER_KEY = 'wtWw3J6IzZhW5vtlNhJ16xfVS'
-    CONSUMER_SECRET = 'rw6G0ErwEEos6Xvl6ua59csCCuGZwkHJZ1IOZ94PAV5OvVHAeq'
+    #the key we want to use
+    #0 => CYo, 1 => Roy, 2 => %%
+    usedKeyNumber = 0
 
-    oauth = OAuth(ACCESS_TOKEN, ACCESS_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
+    usedKeys = [] 
+    with open('TwitterKeys.txt') as f:
+        #to skip title
+        f.readline()
+        for i in range(usedKeyNumber):
+            f.readline()
+        usedKeys.append(f.readline().rstrip())
+        for i in range(3):
+            for j in range(keyNumber):
+                f.readline()        
+            usedKeys.append(f.readline().rstrip())
+
+    oauth = OAuth(usedKeys[2], usedKeys[3], usedKeys[0], usedKeys[1])
 
     # Initiate the connection to Twitter Streaming API
     twitter_stream = TwitterStream(auth=oauth)
@@ -77,6 +91,5 @@ def parsetw(track, number):
         y = re.sub("\\\\n","",x)
         z = ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)"," ",y).split())
         text.append(z)
-    
+
     return text, hashtags
-    
