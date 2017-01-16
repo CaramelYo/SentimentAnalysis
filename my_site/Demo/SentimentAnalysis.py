@@ -315,6 +315,9 @@ def predictOnHtml(text):
 
     return predictionHtml
 
+def printOut(text):
+    print(text)
+
 def main():
 ##  to disable the warnings
     warnings.filterwarnings("ignore")

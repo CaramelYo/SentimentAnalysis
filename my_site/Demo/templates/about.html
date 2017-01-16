@@ -115,7 +115,12 @@
 
 		<!-- About -->
 				<!-- about section -->
-				{{script1 | safe}}
+				<h1>Enter the key words you want to inquire about</h1>
+        <form action = '/about' method = 'GET'>
+          <input type = 'text' name = 'keyWords' placeholder = 'YO'>
+          <input type = 'submit' name = 'inquiry' value = 'inquire'>
+        </form>
+        {{script1 | safe}}
 				{{div3 | safe}}
 
 		<!-- End About -->
