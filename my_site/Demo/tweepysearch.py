@@ -13,11 +13,12 @@ import tweepy
 import re
 import datetime
 import delete as de
+import time 
 
 #total key number
 keyNumber = 3
 
-def twittersearch(q, number, since, until):
+def twittersearch(q, number, since, until, lag = 1):
     # Variables that contains the user credentials to access Twitter API
     #the key we want to use
     #0 => CYo, 1 => Roy, 2 => %%
@@ -72,6 +73,7 @@ def twittersearch(q, number, since, until):
             for statues in tweepy.Cursor(api.search, q=q, lang="en", since = new_since, until = new_until).items(number):
                 tweets.append(statues.text)
                 tweetstime.append(statues.created_at)
+                time.sleep(lag)
     elif(differ.days > 1):
     
         for i in range(0, differ.days, 1):
@@ -90,12 +92,14 @@ def twittersearch(q, number, since, until):
             for statues in tweepy.Cursor(api.search, q=q, lang="en", since = new_since, until = new_until).items(number):
                 tweets.append(statues.text)
                 tweetstime.append(statues.created_at)
+                time.sleep(lag)
 
     elif(0 < differ.days <= 1):
         #print('range <= 1 day')
         for statues in tweepy.Cursor(api.search, q=q, lang="en", since = since, until = until).items(number):
             tweets.append(statues.text)
             tweetstime.append(statues.created_at)
+            time.sleep(lag)
     else:
         print('error occur!! Please check your date format. It must be YYYY/mm/dd.')
     
