@@ -34,7 +34,7 @@ def about():
     #y = x
 
     #source = ColumnDataSource(data=dict(x=x, y=y))
-    
+
     source = ColumnDataSource(data=result)
 
     plot = figure(plot_width=400, plot_height=400)
@@ -270,4 +270,4 @@ def contact():
     return render_template("contact.html")
 
 if __name__=="__main__":
-    app.run(port = 5000, host = '140.116.177.150', debug=True)
+    app.run(debug=True)
