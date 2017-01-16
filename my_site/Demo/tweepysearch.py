@@ -116,9 +116,9 @@ def twittersearch(q, number, since, until):
 
 '''
 #test
-t1, t2, t3 = twittersearch('Trump', 10, '2017-01-10', '2017-01-16')
-print(t1)
-print(t2)
-print(t3)
+#t1, t2, t3 = twittersearch('Trump', 10, '2017-01-10', '2017-01-16')
+#print(t1)
+#print(t2)
+#print(t3)
 '''
 

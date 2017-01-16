@@ -2,12 +2,6 @@
 <!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->
 <!--[if !IE]><!--> <html lang="en"> <!--<![endif]-->
 <head>
-	<link rel="stylesheet" href="//cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.css" type="text/css" />
-	<link rel="stylesheet" href="//cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.0.min.css" type="text/css" />
-	<script src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.0.min.js"></script>
- <script type="text/javascript" src={{cdn_js | safe}}></script>
- <link rel="stylesheet" href={{cdn_css2 | safe}} type="text/css" />
- <script type="text/javascript" src={{cdn_js2 | safe}}></script>
 	<title>SentiLab NCKU</title>
 
 	<!-- Meta -->
@@ -23,34 +17,34 @@
 	<!-- Web Fonts -->
 <link href='https://fonts.googleapis.com/css?family=Ek+Mukta:400,600,700' rel='stylesheet' type='text/css'>	<link href='https://fonts.googleapis.com/css?family=Niconne' rel='stylesheet' type='text/css'>
 
-	<!-- CSS Global Compulsory -->
-  <link rel="stylesheet" href= "{{ url_for('static', filename='plugins/bootstrap/css/bootstrap.min.css') }}">
-  <link rel="stylesheet" href= "{{ url_for('static', filename='css/app.css') }}">
-  <link rel="stylesheet" href= "{{ url_for('static', filename='css/blocks.css') }}">
-  <link rel="stylesheet" href= "{{ url_for('static', filename='css/one.style.css') }}">
+<!-- CSS Global Compulsory -->
+<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/bootstrap/css/bootstrap.min.css') }}">
+<link rel="stylesheet" href= "{{ url_for('static', filename='css/app.css') }}">
+<link rel="stylesheet" href= "{{ url_for('static', filename='css/blocks.css') }}">
+<link rel="stylesheet" href= "{{ url_for('static', filename='css/one.style.css') }}">
 
-	<!-- CSS Footer -->
-	<link rel="stylesheet" href= "{{ url_for('static', filename='css/footer-v2.css') }}">
+<!-- CSS Footer -->
+<link rel="stylesheet" href= "{{ url_for('static', filename='css/footer-v2.css') }}">
 
-	<!-- CSS Implementing Plugins -->
-	<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/animate.css') }}">
-	<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/line-icons/line-icons.css') }}">
-	<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/font-awesome/css/font-awesome.min.css') }}">
-	<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/owl-carousel2/static/owl.carousel.css') }}">
-	<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/cube-portfolio/cubeportfolio/css/cubeportfolio.min.css') }}">
-	<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/cube-portfolio/cubeportfolio/custom/custom-cubeportfolio.css') }}">
-	<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/hover-effects/css/custom-hover-effects.css') }}">
-	<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/sky-forms-pro/skyforms/css/sky-forms.css') }}">
-	<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/sky-forms-pro/skyforms/custom/custom-sky-forms.css') }}">
-	<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/pace/pace-flash.css') }}">
+<!-- CSS Implementing Plugins -->
+<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/animate.css') }}">
+<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/line-icons/line-icons.css') }}">
+<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/font-awesome/css/font-awesome.min.css') }}">
+<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/owl-carousel2/static/owl.carousel.css') }}">
+<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/cube-portfolio/cubeportfolio/css/cubeportfolio.min.css') }}">
+<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/cube-portfolio/cubeportfolio/custom/custom-cubeportfolio.css') }}">
+<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/hover-effects/css/custom-hover-effects.css') }}">
+<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/sky-forms-pro/skyforms/css/sky-forms.css') }}">
+<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/sky-forms-pro/skyforms/custom/custom-sky-forms.css') }}">
+<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/pace/pace-flash.css') }}">
 
-  <!-- CSS Theme -->
-  <link rel="stylesheet" href= "{{ url_for('static', filename='css/courses.style.css') }}">
-  <link rel="stylesheet" href= "{{ url_for('static', filename='css/global.css') }}">
-  <link rel="stylesheet" href= "{{ url_for('static', filename='css/lawyer.style.css') }}">
+<!-- CSS Theme -->
+<link rel="stylesheet" href= "{{ url_for('static', filename='css/courses.style.css') }}">
+<link rel="stylesheet" href= "{{ url_for('static', filename='css/global.css') }}">
+<link rel="stylesheet" href= "{{ url_for('static', filename='css/lawyer.style.css') }}">
 
-  <!-- CSS Customization -->
-  <link rel="stylesheet" href= "{{ url_for('static', filename='css/custom.css') }}">
+<!-- CSS Customization -->
+<link rel="stylesheet" href= "{{ url_for('static', filename='css/custom.css') }}">
 </head>
 
 <body id="body" data-spy="scroll" data-target=".one-page-header" class="demo-lightbox-gallery font-main promo-padding-top">
@@ -85,9 +79,6 @@
 							<li class="page-scroll nav__text">
 								<a href="/graph">Graph</a>
 							</li>
-							<li class="page-scroll nav__text">
-								<a href="/references">References</a>
-							</li>
 							<li class="page-scroll nav__text g-sm-mb-20">
 								<a href="/contact">Contact</a>
 							</li>
@@ -113,20 +104,47 @@
 		</nav>
 		<!-- End Header -->
 
-		<!-- About -->
-				<!-- about section -->
-				<h1>Inquire sentiment graph</h1>
-				<form action = '/sentianalysis' method = 'GET'>
-					<input type = 'text' name = 'keyWords' placeholder = 'type any words'>
-					<input type = 'text' name = 'number' placeholder = 'number of tweets'>
-					<input type = 'text' name = 'since' placeholder = 'from 2016-01-xx'>
-					<input type = 'text' name = 'until' placeholder = 'to 2016-01-xx'>
-					<input type = 'submit' name = 'inquiry' value = 'inquire'>
-				</form>
-        {{script1 | safe}}
-				{{div3 | safe}}
 
-		<!-- End About -->
+		<!-- Section -->
+		<!-- Blog section -->
+		<section id="blog">
+			<div class="container g-pt-30 g-pb-30">
+				<div class="row">
+					<div class="col-sm-8 col-sm-offset-2">
+						<div class="g-heading-v9 text-center g-mb-30">
+							<h2 class="text-uppercase"><strong>Visualizing Twitter Sentiment</strong></h2><br>
+							<h1>It's more flexible that we use different classifiers to score the sentiment, and we parse adjective words only.</h1>
+						</div>
+						<p class="g-fs-16 text-center g-mb-70">The motivation to use sentiment analysis in Twitter: <br>
+1. More closer to final demander<br>
+2. The actual sentiment of the society<br>
+3. Social Media equals to Actual Social Network</p>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-4 col-3xs-12 lawyer-post g-mb-50">
+						<center><img src="static/img/dataprocessing.png" alt=""></center>
+						<center><p class="g-fs-10 g-theme-text-color-1"><strong>Use NLTK stop words and Post of Speech(pos)</strong></p></center>
+						<center><h5 class="text-uppercase"><strong>Data Preprocessing</strong></h5></center>
+						<p>Use regular expression to delete emotional figure(:p,  :), :-(, etc…) in Twitter. </p>
+					</div>
+					<div class="col-xs-4 col-3xs-12 lawyer-post g-mb-50">
+						<center><img src="static/img/senti_.png" alt=""></center>
+						<center><p class="g-fs-10 g-theme-text-color-1"><strong>1. MNB 2. BNB 3. SGD</strong></p></center>
+						<center><h5 class="text-uppercase"><strong>Voting Mechanism</strong></h5></center>
+						<p>Chose the best accuracy classifier from several methods.</p>
+					</div>
+					<div class="col-xs-4 col-3xs-12 lawyer-post g-mb-50">
+						<center><img src="static/img/sentiti.png" alt=""></center>
+						<center><p class="g-fs-10 g-theme-text-color-1"><strong>Demo</strong></p></center>
+						<center><h5 class="text-uppercase"><strong>The real time graphing for sentiment analysis</strong></h5></center>
+						<p>Use python library "Bokeh" to draw bar chart. The word cloud is drawn by "wordcloud" python library.</p>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- End Blog section -->
+
 
 	</main>
 

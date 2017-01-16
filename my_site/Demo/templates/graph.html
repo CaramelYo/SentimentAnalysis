@@ -31,6 +31,7 @@
 	<link rel="stylesheet" href= "{{ url_for('static', filename='css/footer-v2.css') }}">
 
 	<!-- CSS Implementing Plugins -->
+  <link rel="stylesheet" href="../static/assets/plugins/line-icons-pro/styles.css">
 	<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/animate.css') }}">
 	<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/line-icons/line-icons.css') }}">
 	<link rel="stylesheet" href= "{{ url_for('static', filename='plugins/font-awesome/css/font-awesome.min.css') }}">
@@ -46,6 +47,7 @@
   <link rel="stylesheet" href= "{{ url_for('static', filename='css/courses.style.css') }}">
   <link rel="stylesheet" href= "{{ url_for('static', filename='css/global.css') }}">
   <link rel="stylesheet" href= "{{ url_for('static', filename='css/lawyer.style.css') }}">
+  <link rel="stylesheet" href="../static/assets/css/wealth.style.css">
 
   <!-- CSS Customization -->
   <link rel="stylesheet" href= "{{ url_for('static', filename='css/custom.css') }}">
@@ -83,9 +85,6 @@
 							<li class="page-scroll nav__text">
 								<a href="/graph">Graph</a>
 							</li>
-							<li class="page-scroll nav__text">
-								<a href="/references">References</a>
-							</li>
 							<li class="page-scroll nav__text g-sm-mb-20">
 								<a href="/contact">Contact</a>
 							</li>
@@ -112,6 +111,14 @@
 		<!-- End Header -->
 
 		<!-- Graph -->
+    <h1>Inquire sentiment graph</h1>
+    <form action = '/graph' method = 'GET'>
+      <input type = 'text' name = 'keyWords' placeholder = 'type any words'>
+      <input type = 'text' name = 'number' placeholder = 'number of tweets'>
+      <input type = 'text' name = 'since' placeholder = 'from 2017-01-xx'>
+      <input type = 'text' name = 'until' placeholder = 'to 2017-01-xx'>
+      <input type = 'submit' name = 'inquiry' value = 'inquire'>
+    </form>
     {{script1 | safe}}
     {{div5 | safe}}
 		<!-- End graph -->
