@@ -56,7 +56,6 @@ def loadBackDiscourse():
             backDiscourse.append(word_tokenize(line))
 
     print('loading backDiscourse ends')
-    print(backDiscourse)
 
 def tokenize(s):
     return tokens_re.findall(s)

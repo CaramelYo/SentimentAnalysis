@@ -1,6 +1,3 @@
-# for python 3 to python 2
-from __future__ import print_function
-
 import nltk
 import random
 import pickle
@@ -20,20 +17,18 @@ from sklearn.decomposition import LatentDirichletAllocation as LDA
 
 import delete
 
-#import twittersearch as search
-#import twittertrend
-#mport twitterstream as stream
-
 ##global info
 vocabulary = []
 classifiers = []
 discourse = []
-punctuation = ['.', ',', '--']
+sentenceSpliter = ['.', ',', '--']
 stopWords = stopwords.words('english')
 wordTypes = ['JJ', 'JJR', 'JJS', 'NN', 'NNS', 'RB', 'RBS', 'UH', 'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ']
-trainingRatio = 0.9
-trainingSize = 500
+trainingRatio = 0.8
 threshold = 0.7
+
+#to define training mode. 0 => partial training for MNB BNB SGD. 1 => fitting for LG. 2 => fitting for SVC LinearSVC NuSVC
+trainingMode = 3
 
 # classifierNames = ["MNB",
 #                    "BNB",
@@ -43,10 +38,24 @@ threshold = 0.7
 #                    "NuSVC",
 #                    "Voting"]
 
-classifierNames = ["MNB",
-                   "BNB",
-                   "SGD",
-                   "Voting"]
+if(trainingMode == 0):
+    #partial training size
+    trainingSize = 500
+elif(trainingMode == 1):
+    trainingSize = 5500
+elif(trainingMode == 2):
+    trainingSize = 800
+
+if(trainingMode == 0):
+    classifierNames = ['MNB', 'BNB', 'SGD', 'Voting']
+elif(trainingMode == 1):
+    classifierNames = ['LogisticRegression', 'Voting']
+elif(trainingMode == 2):
+    classifierNames = ['SVC', 'LinearSVC', 'NuSVC', 'Voting']
+elif(trainingMode == 3):
+    classifierNames = ['MNB', 'BNB', 'SGD', 'LogisticRegression', 'SVC', 'LinearSVC', 'NuSVC', 'Voting']
+
+dataFileNames = ['FilteredShortMovieReviews', 'FilteredMovieReviews']
 
 ##to define the style. 0 => Normal style. Load documents, train, and save classifier. 1 => Module style. Load vote classifier 
 style = 0
@@ -67,8 +76,6 @@ def loadData():
     elif(isMovieReviews == 0):
         with open('Data/PositiveReviews.txt') as f:
             lines = f.readlines()
-
-        print(type(lines))
 
         dataset = [[word_tokenize(line), 'pos']
                   for line in lines]
@@ -91,8 +98,6 @@ def loadDiscourse():
             discourse.append(word_tokenize(line))
 
     print('loading discourse ends')
-    print(discourse)
-
     return discourse
 
 def wordsFilter(data):
@@ -197,11 +202,11 @@ def writeToTxt(data, fileName):
             print(word, file = file)
 
 def save(data, fileName):
-    with open(fileName + '.pickle', 'wb') as file:
+    with open('Pickle/' + fileName + '.pickle', 'wb') as file:
         pickle.dump(data, file)
 
 def load(fileName):
-    with open(fileName + '.pickle', 'rb') as file:
+    with open('Pickle/' + fileName + '.pickle', 'rb') as file:
         data = pickle.load(file)
     return data
 
@@ -286,28 +291,26 @@ def main():
     warnings.filterwarnings("ignore")
 
     if style == 0:
-        global discourse
-        global punctuation
-        discourse = loadDiscourse()
-
-        dataset = loadData()
-
-        #print('show original reviews')
-        #print(dataset[228][0])
-        #print('show after word_tokenize')
-        #rint(word_tokenize(dataset[228][0]))
-
         '''
-        length = len(dataset)
+        dataset = loadData()
+        random.shuffle(dataset)
 
-        for l in range(length):
+        # # to get the part of dataset
+        #dataset = dataset[:100]
+
+        
+        print('removing back discourse starts')
+        global discourse
+        global sentenceSpliter
+        discourse = loadDiscourse()
+        datasetLength = len(dataset)
+        for l in range(datasetLength):
             isDiscourse = False
             length = len(dataset[l][0])
             newWords = []
             start = 0
-            #
             for i in range(length):
-                if(isDiscourse and (dataset[l][0][i] in punctuation)):
+                if(isDiscourse and (dataset[l][0][i] in sentenceSpliter)):
                     start = i + 1
                     isDiscourse = False
                 else:
@@ -321,8 +324,7 @@ def main():
                                     break
 
                             if(isDiscourse):
-                                print('match discourse :', d, ' ', dataset[l][0][i], 'in line', l)
-                                #end = i
+                                #print('match discourse :', d, ' ', dataset[l][0][i], 'in line', l)
                                 newWords.extend(dataset[l][0][start:i])
                                 break
             
@@ -330,150 +332,232 @@ def main():
                 newWords.extend(dataset[l][0][start:])
             dataset[l][0] = newWords
             del newWords
-            #print(dataset[l][0])
+        print('removing back discourse ends')
+        
+
+        # to filter data
+        print('filtering data start')
+        global vocabulary
+        if isSetVocabulary == 1:
+            for data in dataset:
+                wordsFilterWithVocabulary(data)
+                
+            save(vocabulary, 'Vocabulary')
+            print('building vocabulary is completed and saved\nvocabulary size =', len(vocabulary))
+        elif isSetVocabulary == 0:
+            for data in dataset:
+                wordsFilter(data)
+        print('filtering data is completed')
+
+        print('saving filtered dataset start')
+        save(dataset, dataFileNames[isMovieReviews])
+        print('saving filtered dataset end')
+
+        # to split dataset into two part, training data and test data
+        totalSize = len(dataset)
+        print('total size = ', totalSize)
+        trainingDataSize = int(totalSize * trainingRatio)
+        testDataSize = totalSize - trainingDataSize
+        print('training data size = ', trainingDataSize)
+        print('test data size = ', testDataSize)
+        trainingData = dataset[:trainingDataSize]
+        testData = dataset[trainingDataSize:]
+        
+        del dataset
+
+        print('training targeted classifier features start')
+        trainingClassifierFeatures, trainingTargets = buildTargetedClassifierFeatures(trainingData)
+        print('training targeted classifier features are completed')
+
+        print('saving training classifier features and training targets start')
+        save(trainingClassifierFeatures, 'TrainingClassifierFeatures')
+        save(trainingTargets, 'TrainingTargets')
+        print('saving training classifier features and training targets end')
+        
+        print('test targeted classifier features start')
+        testClassifierFeatures, testTargets = buildTargetedClassifierFeatures(testData)
+        print('test targeted classifier features are completed')
+
+        print('saving test classifier features and test targets start')
+        save(testClassifierFeatures, 'TestClassifierFeatures')
+        save(testTargets, 'TestTargets')
+        print('saving test classifier features and test targets end')
         '''
 
+        
         print('loading features and targets starts')
-
-        posSize = 5331
-        negSize = 5331
-
-        #return
-
-        with open('Data/FilteredPositiveReviews.txt', 'w') as f:
-            for i in range(posSize):
-                string = ''
-                for word in dataset[i][0]:
-                    string += word + ' '
-
-                f.write(string + '\n')
-
-        with open('Data/FilteredNegativeReviews.txt', 'w') as f:
-            for i in range(posSize, negSize + posSize):
-                string = ''
-                for word in dataset[i][0]:
-                    string += word + ' '
-
-                f.write(string + '\n')
-
-        return
-
         trainingClassifierFeatures = load('TrainingClassifierFeatures')
         trainingTargets = load('TrainingTargets')
 
         testClassifierFeatures = load('TestClassifierFeatures')
         testTargets = load('TestTargets')
 
-        trainingClassifierFeatures = trainingClassifierFeatures[100:200]
-        testClassifierFeatures = testClassifierFeatures[10:20]
+        # trainingClassifierFeatures = trainingClassifierFeatures[100:200]
+        # testClassifierFeatures = testClassifierFeatures[10:20]
 
-        trainingTargets = trainingTargets[100:200]
-        testTargets = testTargets[10:20]
+        # trainingTargets = trainingTargets[100:200]
+        # testTargets = testTargets[10:20]
 
-        trainingDataSize = 100
-        testDataSize = 10
+        # trainingDataSize = 100
+        # testDataSize = 10
 
-        #trainingDataSize = len(trainingTargets)
-        #testDataSize = len(testTargets)
-
+        trainingDataSize = len(trainingTargets)
+        testDataSize = len(testTargets)
         print('loading features and targets ends')
+        
+        '''
+        if(trainingMode != 0):
+            trainingClassifierFeatures = trainingClassifierFeatures[trainingSize: trainingSize * 2]
+            trainingTargets = trainingTargets[trainingSize: trainingSize * 2]
+            trainingDataSize = trainingSize
+        
         
         # to train the sentiment models
         global classifiers
-        print('classifiers creating start')
         gc.collect()
+
+        if(trainingMode == 0):
+            # MultinomialNB
+            classifiers.append(MultinomialNB())
+            # BernoulliNB
+            classifiers.append(BernoulliNB())
+            # Stochastic Gradient Descent
+            classifiers.append(SGDClassifier())
+        elif(trainingMode == 1):
+            # LogisticRegression abort because it doesn't have 'partial_fit'
+            classifiers.append(LogisticRegression())
+        elif(trainingMode == 2):
+            # SVC no partial_fit
+            classifiers.append(SVC())
+            # LinearSVC no partial_fit
+            classifiers.append(LinearSVC())
+            # NuSVC no partial_fit
+            classifiers.append(NuSVC())
         
-##      to use the naive bayes classifier to train. [ [{}, ''] , ....]
-        # classifiers.append(nltk.NaiveBayesClassifier.train(trainingTargetedClassifierFeatures))
-##        classifiers.append(
+        if(trainingMode == 0):
+            # to partially train the classifier
+            print('classifiers partial training start')
+            start = 0
+            end = 0
+            tempSize = trainingDataSize
+            # it is passed to partial_fit when first call
+            allTargets = np.array(['neg', 'pos'])
 
-##    to try other classifier
-##    MultinomialNB
-##        classifiers.append(SklearnClassifier(MultinomialNB()))
-        #classifiers.append(MultinomialNB())
+            # first call
+            if(tempSize > trainingSize):
+                end += trainingSize
+                for classifier in classifiers:
+                    # print('i = ', i)
+                    classifier.partial_fit(trainingClassifierFeatures[start: end], trainingTargets[start: end], classes = allTargets)
 
-##    BernoulliNB
-##        classifiers.append(SklearnClassifier(BernoulliNB()))
-        #classifiers.append(BernoulliNB())
-##    LogisticRegression abort because it doesn't have 'partial_fit'
-##        classifiers.append(SklearnClassifier(LogisticRegression()))
-        # classifiers.append(LogisticRegression())
+                tempSize -= trainingSize
+                start = end
 
-##    SGDClassifier
-##        classifiers.append(SklearnClassifier(SGDClassifier()))
-        #classifiers.append(SGDClassifier())
+            # to partially train continually
+            while(tempSize > trainingSize):
+                end += trainingSize
+                for classifier in classifiers:
+                    classifier.partial_fit(trainingClassifierFeatures[start: end], trainingTargets[start: end])
 
-##    SVC no partial_fit
-        #classifiers.append(SVC())
+                tempSize -= trainingSize
+                start = end
 
-##    LinearSVC no partial_fit
-##        classifiers.append(SklearnClassifier(LinearSVC()))
-        classifiers.append(LinearSVC())
+            # last call
+            end += tempSize
+            for classifier in classifiers:
+                classifier.partial_fit(trainingClassifierFeatures[start: end], trainingTargets[start: end], classes = allTargets)
 
-##    NuSVC no partial_fit
-##        classifiers.append(SklearnClassifier(NuSVC()))
-        #classifiers.append(NuSVC())
+            # to use our vote classifier
+            # can use function like 'add' to add classifier?
+            voteClassifier = VoteClassifier(classifiers[0],
+                                            classifiers[1],
+                                            classifiers[2])
+            classifiers.append(voteClassifier)
+            
+            print('classifiers partial training ends')
+        elif(trainingMode == 1):
+            print('classifiers fitting starts')
+            # for classifier in classifiers:
+            for i in range(len(classifiers)):
+                print('i = ', i)
+                classifiers[i].fit(trainingClassifierFeatures, trainingTargets)
+                save(classifiers[i], classifierNames[i])
 
-        print('classifiers creating end')
+            voteClassifier = VoteClassifier(classifiers[0])
+            classifiers.append(voteClassifier)
+            print('classifiers fitting ends')
+        elif(trainingMode == 2):
+            print('classifiers fitting starts')
+            # for classifier in classifiers:
+            for i in range(len(classifiers)):
+                print('i = ', i)
+                classifiers[i].fit(trainingClassifierFeatures, trainingTargets)
+                save(classifiers[i], classifierNames[i])
 
-        # to train the classifier
-        classifierNumber = len(classifiers)
-        print('used classifier number = ', classifierNumber)
-
-# ##    except naive bayes classifier
-#         for i in range(classifierNumber):
-#             # print('i = ', i)
-#             classifiers[i].fit(trainingClassifierFeatures, trainingTarget)
-
-        print('classifiers partial training start')
-        '''
-        start = 0
-        end = 0
-        tempSize = trainingDataSize
-        # it is passed to partial_fit when first call
-        allTargets = np.array(['neg', 'pos'])
-
-        # first call
-        if(tempSize > trainingSize):
-            end += trainingSize
-            for i in range(classifierNumber):
-                # print('i = ', i)
-                classifiers[i].partial_fit(trainingClassifierFeatures[start: end], trainingTargets[start: end], classes = allTargets)
-
-            tempSize -= trainingSize
-            start = end
-
-        # to partially train continually
-        while(tempSize > trainingSize):
-            end += trainingSize
-            for i in range(classifierNumber):
-                classifiers[i].partial_fit(trainingClassifierFeatures[start: end], trainingTargets[start: end])
-
-            tempSize -= trainingSize
-            start = end
-
-        # last call
-        end += tempSize
-        for i in range(classifierNumber):
-            classifiers[i].partial_fit(trainingClassifierFeatures[start: end], trainingTargets[start: end], classes = allTargets)
-
-        # to use our vote classifier
-        # can use function like 'add' to add classifier?
-        voteClassifier = VoteClassifier(classifiers[0],
-                                        classifiers[1],
-                                        classifiers[2])
-        classifiers.append(voteClassifier)
-        '''
-
-        classifiers[0].fit(trainingClassifierFeatures, trainingTargets)
-
-        print('classifiers partial training ends')
+            voteClassifier = VoteClassifier(classifiers[0])
+            classifiers.append(voteClassifier)
+            print('classifiers fitting ends')
         
+        print('saving classifiers starts')
+        if(trainingMode == 0):
+            temp = len(classifiers) - 1
+            for i in range(temp):
+                save(classifiers[i], classifierNames[i])
+        elif(trainingMode == 1):
+            print('saved')
+            # temp = len(classifiers) - 1
+            # for i in range(temp):
+            #     save(classifiers[i], classifierNames[i])
+        elif(trainingMode == 2):
+            print('saved')
+        print('saving classifiers ends')
+        '''
+
+
+        print('loading classifiers starts')
+        global classifiers
+
+        if(trainingMode == 0):
+            temp = len(classifierNames) - 1
+            for i in range(temp):
+                classifiers.append(load(classifierNames[i]))
+
+            voteClassifier = VoteClassifier(classifiers[0],
+                                            classifiers[1],
+                                            classifiers[2])
+            classifiers.append(voteClassifier)
+        elif(trainingMode == 1):
+            temp = len(classifierNames) - 1
+            for i in range(temp):
+                classifiers.append(load(classifierNames[i]))
+
+            voteClassifier = VoteClassifier(classifiers[0],
+                                            classifiers[1],
+                                            classifiers[2])
+            classifiers.append(voteClassifier)
+        elif(trainingMode == 3):
+            temp = len(classifierNames) - 1
+            for i in range(temp):
+                classifiers.append(load(classifierNames[i]))
+
+            voteClassifier = VoteClassifier(classifiers[0],
+                                            classifiers[1],
+                                            classifiers[2],
+                                            classifiers[3],
+                                            classifiers[4],
+                                            classifiers[5],
+                                            classifiers[6])
+            classifiers.append(voteClassifier)
+
+        print('loading classifiers ends')
+        
+
         # to predict
         print('predicting start')
+        gc.collect()
 
         for i in range(len(classifiers)):
-            print(classifierNames[i], 'Algo accuracy percent: ', (accuracy(classifiers[i], testClassifierFeatures, testTargets)) * 100)    
+            print(classifierNames[i], 'Algo accuracy percent: ', (accuracy(classifiers[i], testClassifierFeatures, testTargets)) * 100)
             # print("Classification: ", voteClassifier.classify(test[0]), " Confidence: ", voteClassifier.confidence(test[0]), 'in real: ', test[1])
 
         # to save the classifier as pickle except vote classifier
