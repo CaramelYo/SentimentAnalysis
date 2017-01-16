@@ -13,7 +13,7 @@ def about():
 
     if request.method == 'GET':
         keyWords = request.args.get('keyWords', 'Trump')
-        number = request.args.get('number', 1000, type=int)
+        number = request.args.get('number', 10, type=int)
         since = request.args.get('since', '2017-01-15')
         until = request.args.get('until', '2017-01-16')
 
@@ -49,8 +49,9 @@ def aboutUpdate(q, number, since, until):
     #texts, times = search.twittersearch(q = q, number = 10, since = '2017-01-10', until = '2017-01-12')
 
     sa.printOut('update')
-    number = 10
-    texts, times, fullTexts = search.twittersearch(q = q, number = number, since = '2017-01-10', until = '2017-01-16')
+    #texts, times, fullTexts = search.twittersearch(q = q, number = number, since = '2017-01-10', until = '2017-01-16')
+    texts, times, fullTexts = search.twittersearch(q = q, number = number, since = '2017-01-15', until = '2017-01-16')
+    sa.printOut('search completed')
 
     result = sa.predictAsDict(texts, number, times)
 

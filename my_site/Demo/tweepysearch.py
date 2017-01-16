@@ -21,7 +21,7 @@ def twittersearch(q, number, since, until):
     # Variables that contains the user credentials to access Twitter API
     #the key we want to use
     #0 => CYo, 1 => Roy, 2 => %%
-    usedKeyNumber = 1
+    usedKeyNumber = 0
 
     usedKeys = [] 
     with open('TwitterKeys.txt') as f:
@@ -110,9 +110,15 @@ def twittersearch(q, number, since, until):
     first_text = de.delete_first(text)
  
     #test
-    print('OK')
+    print('tweepy search is completed')
 
     return all_text, tweetstime, first_text
 
+'''
 #test
-twittersearch('Trump', 10, '2017-01-12', '2017-01-14')
+t1, t2, t3 = twittersearch('Trump', 10, '2017-01-10', '2017-01-16')
+print(t1)
+print(t2)
+print(t3)
+'''
+
