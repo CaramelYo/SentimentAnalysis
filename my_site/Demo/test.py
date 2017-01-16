@@ -18,9 +18,9 @@ from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.svm import SVC, LinearSVC, NuSVC
 from sklearn.decomposition import LatentDirichletAllocation as LDA
 
-import twittersearch as search
-import twittertrend
-import twitterstream as stream
+#import twittersearch as search
+#import twittertrend
+#mport twitterstream as stream
 
 ##global info
 vocabulary = []
@@ -78,21 +78,16 @@ def loadData():
     print('loading is  completed')
     return dataset
 
-def loadShortReviews():
-    print('loading short reviews starts')
-
-    with open('Data/PositiveReviews.txt') as f:
-        dataset = [word_tokenize([line), 'pos']
-                  for line in f]
-    
-    print('loading short reviews ends')
-    return dataset
-
 def loadDiscourse():
+    print('loading discourse starts')
+
     discourse = []
-    with open('Vocabulary for Sentiment Analysis/discourse_connectors.txt') as f:
+    with open('Vocabulary for Sentiment Analysis/BackDiscourse.txt') as f:
         for line in f:
             discourse.append(word_tokenize(line))
+
+    print('loading discourse ends')
+    print(discourse)
 
     return discourse
 
@@ -287,57 +282,75 @@ def main():
     warnings.filterwarnings("ignore")
 
     if style == 0:
-        print('loading discourse starts')
-
         global discourse
         global punctuation
         discourse = loadDiscourse()
 
-        print('loading discourse ends')
-
-        dataset = loadShortReviews()
+        dataset = loadData()
 
         #print('show original reviews')
         #print(dataset[228][0])
         #print('show after word_tokenize')
-        #print(word_tokenize(dataset[228][0]))
+        #rint(word_tokenize(dataset[228][0]))
 
-        isDiscourse = false
+        length = len(dataset)
 
-        for data in dataset:
-            length = len(data[0])
+        for l in range(length):
+            isDiscourse = False
+            length = len(dataset[l][0])
+            newWords = []
+            start = 0
+            #
             for i in range(length):
-                if(isDiscourse):
+                if(isDiscourse and (dataset[l][0][i] in punctuation)):
+                    start = i + 1
+                    isDiscourse = False
                 else:
                     for d in discourse:
-                        if(data[0][i] in d[0]):
+                        if(dataset[l][0][i] == d[0]):
                             dLength = len(d)
-                            isDiscourse = true
+                            isDiscourse = True
                             for j in range(1, dLength):
-                                if(!data[0][i + j] || data[0][i + j] != d[j]):
-                                    isDiscourse = false
+                                if((not dataset[l][0][i + j]) or dataset[l][0][i + j] != d[j]):
+                                    isDiscourse = False
                                     break
 
-                    #YO
-
-
-
-            for words in data[0]:
-                length = len(words)
-                for i in range(length):
-                    if(isDiscourse && words[i] in punctuation):
-                        isDiscourse = false
-                        end = i
-                        
-
-                    for d in discourse:
-                        if(words[i] in d[0]):
-                            start = i
-                            isDiscourse = true
-                            break;
-
+                            if(isDiscourse):
+                                print('match discourse :', d, ' ', dataset[l][0][i], 'in line', l)
+                                #end = i
+                                newWords.extend(dataset[l][0][start:i])
+                                break
+            
+            if(not isDiscourse):
+                newWords.extend(dataset[l][0][start:])
+            dataset[l][0] = newWords
+            del newWords
+            #print(dataset[l][0])
 
         print('loading features and targets starts')
+
+        posSize = 5331
+        negSize = 5331
+
+        #return
+
+        with open('Data/FilteredPositiveReviews.txt', 'w') as f:
+            for i in range(posSize):
+                string = ''
+                for word in dataset[i][0]:
+                    string += word + ' '
+
+                f.write(string + '\n')
+
+        with open('Data/FilteredNegativeReviews.txt', 'w') as f:
+            for i in range(posSize, negSize + posSize):
+                string = ''
+                for word in dataset[i][0]:
+                    string += word + ' '
+
+                f.write(string + '\n')
+
+        return
 
         trainingClassifierFeatures = load('TrainingClassifierFeatures')
         trainingTargets = load('TrainingTargets')
