@@ -15,9 +15,9 @@ from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.svm import SVC, LinearSVC, NuSVC
 from sklearn.decomposition import LatentDirichletAllocation as LDA
 
-import twittertrend
-import tweepysearch as search
-import twitterstream as stream
+#import twittertrend
+#import tweepysearch as search
+#import twitterstream as stream
 
 ##global info
 vocabulary = []
@@ -28,6 +28,9 @@ trainingRatio = 0.9
 trainingSize = 500
 threshold = 0.7
 
+#to define training mode. 0 => partial training for MNB BNB SGD. 1 => fitting for LG. 2 => fitting for SVC LinearSVC NuSVC
+trainingMode = 4
+
 # classifierNames = ["MNB",
 #                    "BNB",
 #                    "LogisticRegression",
@@ -36,10 +39,26 @@ threshold = 0.7
 #                    "NuSVC",
 #                    "Voting"]
 
-classifierNames = ["MNB",
-                   "BNB",
-                   "SGD",
-                   "Voting"]
+if(trainingMode == 0):
+    #partial training size
+    trainingSize = 500
+elif(trainingMode == 1):
+    trainingSize = 5500
+elif(trainingMode == 2):
+    trainingSize = 800
+
+if(trainingMode == 0):
+    classifierNames = ['MNB', 'BNB', 'SGD', 'Voting']
+elif(trainingMode == 1):
+    classifierNames = ['LogisticRegression', 'Voting']
+elif(trainingMode == 2):
+    classifierNames = ['SVC', 'LinearSVC', 'NuSVC', 'Voting']
+elif(trainingMode == 3):
+    classifierNames = ['MNB', 'BNB', 'SGD', 'LogisticRegression', 'SVC', 'LinearSVC', 'NuSVC', 'Voting']
+elif(trainingMode == 4):
+    classifierNames = ['MNB', 'BNB', 'LogisticRegression', 'Voting']
+
+dataFileNames = ['FilteredShortMovieReviews', 'FilteredMovieReviews']
 
 ##to define the style. 0 => Normal style. Load documents, train, and save classifier. 1 => Module style. Load vote classifier 
 style = 1
@@ -540,13 +559,10 @@ def main():
         # print('loading test classifier features and test targets end')
         
         print('loading vocabulary starts')
-        
         vocabulary = load('Vocabulary')
-        
         print('loading vocabulary ends')
 
         print('loading classifiers starts')
-        
         temp = len(classifierNames) - 1
         for i in range(temp):
             classifiers.append(load(classifierNames[i]))
@@ -556,36 +572,6 @@ def main():
                                         classifiers[2])
         classifiers.append(voteClassifier)
         print('loading classifiers ends')
-
-        '''
-        print('twitter tren strarts')
-
-        reviews, hashtable = twittertrend.trend(number = 5, lag = 0)
-
-        # reviews is [[]]
-        for review in reviews:
-          print(review)
-
-        print('twitter trend ends')
-
-        print('twitter parsetw starts')
-        
-        result = stream.parsetw(track = 'Trump', number = 2)
-        
-        # result is [[[]]]
-        for r in result[0]:
-          print(r)
-
-        print('twitter parsetw ends')
-        '''
-
-        #print('twitter search starts')
-
-        #texts, times = search.twittersearch(q = ['RUSSIA', 'USA'], number = 10, since = '2017-01-10', until = '2017-01-12')
-        
-        #predictAsList(texts)
-
-        #print('twitter search ends')
 
         #length = len(texts)
         #for i in range(length):
