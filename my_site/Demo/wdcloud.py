@@ -8,6 +8,9 @@ Using a mask you can generate wordclouds in arbitrary shapes.
 #from os import path
 #from scipy.misc import imread
 from wordcloud import WordCloud
+import os, matplotlib
+matplotlib.use('Agg')
+#matplotlib.use('Pdf')
 import matplotlib.pyplot as plt
 import tweepysearch as search
 #d = path.dirname(__file__)
@@ -15,9 +18,7 @@ import tweepysearch as search
 # Read the whole text.
 # text = open(path.join(d, 'twitter_data.txt')).read()
 def wordcloud(q, number, since, until):
-    
     all_text, time , first_text = search.twittersearch(q = q , number = number, since = since, until = until)
-    
     
     for t in first_text:
     
@@ -38,8 +39,9 @@ def wordcloud(q, number, since, until):
     #wc.to_file(path.join(d, "alice.jpg"))
     plt.imshow(wc)
     plt.axis("off")
-    plt.figure()
+    #plt.figure()
     #plt.imshow(alice_mask, cmap=plt.cm.gray)
     #plt.axis("off")
     #plt.show()
     plt.savefig('worldcloud.jpeg')
+

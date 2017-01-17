@@ -111,7 +111,7 @@
 		<!-- End Header -->
 
 		<!-- Graph -->
-    <h1>Inquire sentiment graph</h1>
+    <h1>Inquire tweets report graph</h1>
     <form action = '/graph' method = 'GET'>
       <input type = 'text' name = 'keyWords' placeholder = 'type any words'>
       <input type = 'text' name = 'number' placeholder = 'number of tweets'>
@@ -121,6 +121,16 @@
     </form>
     {{script1 | safe}}
     {{div5 | safe}}
+
+    <h1>Here is the wordcloud of tweets!</h1>
+
+
+<img src = {{screenshot_location}} alt = '' />
+
+<!--
+<img src= "{{ url_for('static', filename='img/worldcloud.jpeg') }}" alt="" />
+<img src="static/img/worldcloud.jpeg?v=<?php echo Date("Y.m.d.G.i.s")?>
+-->
 		<!-- End graph -->
 
 

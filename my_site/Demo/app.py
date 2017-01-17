@@ -1,7 +1,9 @@
 import json
-from flask import Flask,request,render_template
+from flask import Flask,request,render_template, url_for
 
 app=Flask(__name__)
+
+imgNumber = 0
 
 @app.route('/')
 def home():
@@ -39,6 +41,12 @@ def sentiUpdate(q, number, since, until):
     from bokeh.plotting import figure, output_file, show, curdoc
     from bokeh.models.widgets import TextInput
     import numpy as np
+    from collections import Counter
+    from bokeh.charts import output_file, show, Bar
+    import tweepysearch as search
+    import pandas as pd
+    import top20bar
+    from bokeh.models import CustomJS, ColumnDataSource, Div
 
     #for twitter parsing
     import tweepysearch as search
@@ -49,8 +57,6 @@ def sentiUpdate(q, number, since, until):
     def datetime(x):
         return np.array(x, dtype=np.datetime64)
 
-    #to parse old data from twitter
-    #texts, times = search.twittersearch(q = q, number = 10, since = '2017-01-10', until = '2017-01-12')
 
     sa.printOut('update')
     #texts, times, fullTexts = search.twittersearch(q = q, number = number, since = '2017-01-10', until = '2017-01-16')
@@ -59,6 +65,7 @@ def sentiUpdate(q, number, since, until):
 
     result = sa.predictAsDict(texts, number, times)
 
+        #graph1
     p1 = figure(x_axis_type="datetime", title="Sentiment Analysis")
     p1.grid.grid_line_alpha=0.3
     p1.xaxis.axis_label = 'Date'
@@ -67,7 +74,24 @@ def sentiUpdate(q, number, since, until):
     p1.line(datetime(result['date']), result['score'], color='#A6CEE3', legend=q)
     p1.legend.location = 'top_left'
 
-    script1, div2, = components(gridplot([[p1]], plot_width=500, plot_height=500))
+        #graph2
+    import SentimentAnalysis as sa
+    #texts2, tweets2, tweetss = search.twittersearch(q = q, number = number, since = since, until = until)
+    result2 = sa.predictAsList(texts)
+
+    # plot bar chart
+        
+    words = pd.DataFrame.from_dict(result2, orient='columns', dtype = None)
+    print(words)
+    words.columns = ['sentiment', 'score']
+        
+    a = 'Sentiment Score of '
+    title = a + q
+    
+    sbar = Bar(words, 'sentiment',values='score',
+               title = title, legend='top_right', bar_width=0.5)
+
+    script1, div2, = components(gridplot([[p1,sbar]], plot_width=500, plot_height=500))
     cdn_js=CDN.js_files[0]
     cdn_css=CDN.css_files[0]
     return render_template("sentianalysis.html",
@@ -102,20 +126,29 @@ def graphUpdate(q, number, since, until):
     from bokeh.plotting import figure, output_file, show
     from bokeh.models.widgets import TextInput
     import numpy as np
-    import pandas as pd
     from collections import Counter
     from bokeh.charts import output_file, show, Bar
     import tweepysearch as search
     import pandas as pd
     import top20bar
     from bokeh.models import CustomJS, ColumnDataSource, Div
+    from wordcloud import WordCloud
+    import os, matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    import tweepysearch as search
+
+    #for test
+    import os
+    import SentimentAnalysis as sa
+
 
     def datetime(x):
         return np.array(x, dtype=np.datetime64)
 
     #for twitter parsing
     import tweepysearch as search
-    texts, times, fullTexts = search.twittersearch(q = q, number = number, since = since, until = until)
+    #texts, times, fullTexts = search.twittersearch(q = q, number = number, since = since, until = until)
 
 
     #for bar chart
@@ -131,7 +164,35 @@ def graphUpdate(q, number, since, until):
     a = 'Words Distribution of '
     title = a + q
     wdbar = Bar(words, 'Key Words',values='Words Count', title = title, legend='top_right', bar_width=0.5)
+
+    # wordcloud
+    for t in first_text:
     
+        str1 = ' '.join(t)
+        #print(str1)
+
+    wc = WordCloud(background_color="white", max_words=2000, mask = None)
+
+    # generate word cloud
+    wc.generate(str1)
+
+    # store to file
+    plt.imshow(wc)
+    plt.axis("off")
+    #plt.figure()
+    #plt.axis("off")
+    #plt.show()
+    
+    global imgNumber
+    sa.printOut(imgNumber)
+    img = 'static/img/worldcloud'
+    img += str(imgNumber)
+    img += '.jpeg'
+    sa.printOut(img)
+    imgNumber += 1
+
+    plt.savefig(img)
+
     script1, div5, = components(wdbar)
     cdn_js=CDN.js_files[0]
     cdn_css=CDN.css_files[0]
@@ -143,7 +204,8 @@ def graphUpdate(q, number, since, until):
     cdn_js=cdn_js,
     cdn_css=cdn_css,
     cdn_js2=cdn_js2,
-    cdn_css2=cdn_css2)
+    cdn_css2=cdn_css2,
+    screenshot_location = img)
 
 
 @app.route('/contact')

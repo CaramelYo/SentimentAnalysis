@@ -18,7 +18,7 @@ import time
 #total key number
 keyNumber = 3
 
-def twittersearch(q, number, since, until, lag = 1):
+def twittersearch(q, number, since, until, lag = 0.5):
     # Variables that contains the user credentials to access Twitter API
     #the key we want to use
     #0 => CYo, 1 => Roy, 2 => %%
@@ -55,7 +55,7 @@ def twittersearch(q, number, since, until, lag = 1):
     if(differ.days > 7):
     
         for i in range(0, 7, 1):
-            #print(i)
+            print(i)
             #print('range > 7')
             #print('-----------')
             new_since = current[0] + '-' + current[1] + '-' + str(int(current[2])+i -7)
@@ -77,7 +77,7 @@ def twittersearch(q, number, since, until, lag = 1):
     elif(differ.days > 1):
     
         for i in range(0, differ.days, 1):
-            #print(i)
+            print(i)
             #print('range <= 7')
             #print('-----------')
 
@@ -95,7 +95,7 @@ def twittersearch(q, number, since, until, lag = 1):
                 time.sleep(lag)
 
     elif(0 < differ.days <= 1):
-        #print('range <= 1 day')
+        print('range <= 1 day')
         for statues in tweepy.Cursor(api.search, q=q, lang="en", since = since, until = until).items(number):
             tweets.append(statues.text)
             tweetstime.append(statues.created_at)

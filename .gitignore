@@ -1,4 +1,5 @@
 # ignore the folders
 *.pickle
+*.jpeg
 TwitterKeys.txt
 
